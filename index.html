@@ -78,8 +78,15 @@
       box-shadow: var(--shadow);
     }
 
+    .card-header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
     .card-title {
-      margin: 0 0 16px 0;
+      margin: 0;
       font-size: 1.125rem;
       font-weight: 600;
       display: flex;
@@ -140,6 +147,18 @@
 
     button:hover { background-color: var(--primary-hover); }
     button:active { transform: scale(0.98); }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 6px 14px;
+      font-size: 0.85rem;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--primary-light);
+    }
 
     .btn-block { width: 100%; margin-top: 8px; }
 
@@ -227,7 +246,7 @@
   
   <!-- 1. Add Participants -->
   <div class="card">
-    <h2 class="card-title">1. Participants</h2>
+    <h2 class="card-title" style="margin-bottom: 16px;">1. Participants</h2>
     <div class="form-group">
       <div class="input-btn-group">
         <input type="text" id="personName" placeholder="e.g. Alex" onkeydown="if(event.key==='Enter') addPerson()">
@@ -241,7 +260,7 @@
 
   <!-- 2. Add Expense -->
   <div class="card">
-    <h2 class="card-title">2. Add Expense</h2>
+    <h2 class="card-title" style="margin-bottom: 16px;">2. Add Expense</h2>
     <div class="form-group">
       <label for="expenseDesc">Description</label>
       <input type="text" id="expenseDesc" placeholder="e.g. Dinner, Taxi">
@@ -263,7 +282,7 @@
 
   <!-- 3. Expenses List -->
   <div class="card full-width">
-    <h2 class="card-title">3. Expenses Summary</h2>
+    <h2 class="card-title" style="margin-bottom: 16px;">3. Expenses Summary</h2>
     <div id="expenseList">
       <div class="empty-state">No expenses logged yet.</div>
     </div>
@@ -271,7 +290,10 @@
 
   <!-- 4. Final Settlement -->
   <div class="card full-width">
-    <h2 class="card-title">4. Settlement Plan</h2>
+    <div class="card-header-actions">
+      <h2 class="card-title">4. Settlement Plan</h2>
+      <button id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Plan</button>
+    </div>
     <div id="settlementResults">
       <div class="empty-state">Add participants and expenses to generate a settlement plan.</div>
     </div>
@@ -282,6 +304,7 @@
 <script>
   const people = [];
   const expenses = [];
+  let currentTransactions = [];
 
   function addPerson() {
     const input = document.getElementById('personName');
@@ -370,7 +393,7 @@
       else if (balance > 0.01) creditors.push({ person, amount: balance });
     }
 
-    const transactions = [];
+    currentTransactions = [];
     let i = 0, j = 0;
 
     while (i < debtors.length && j < creditors.length) {
@@ -378,7 +401,7 @@
       const creditor = creditors[j];
       const settledAmount = Math.min(debtor.amount, creditor.amount);
 
-      transactions.push({ debtor: debtor.person, creditor: creditor.person, amount: settledAmount });
+      currentTransactions.push({ debtor: debtor.person, creditor: creditor.person, amount: settledAmount });
 
       debtor.amount -= settledAmount;
       creditor.amount -= settledAmount;
@@ -390,16 +413,42 @@
     const container = document.getElementById('settlementResults');
     if (expenses.length === 0) {
       container.innerHTML = `<div class="empty-state">Add participants and expenses to generate a settlement plan.</div>`;
-    } else if (transactions.length === 0) {
+    } else if (currentTransactions.length === 0) {
       container.innerHTML = `<div class="settlement-card"><span class="settlement-text">Everyone is even! No payments needed.</span></div>`;
     } else {
-      container.innerHTML = transactions.map(t => `
+      container.innerHTML = currentTransactions.map(t => `
         <div class="settlement-card">
           <span class="settlement-text"><strong>${t.debtor}</strong> pays <strong>${t.creditor}</strong></span>
           <span class="settlement-amount">$${t.amount.toFixed(2)}</span>
         </div>
       `).join('');
     }
+  }
+
+  function copySettlement() {
+    const copyBtn = document.getElementById('copyBtn');
+
+    if (expenses.length === 0) {
+      alert("Please add expenses first.");
+      return;
+    }
+
+    let textToCopy = "💰 Settlement Plan:\n\n";
+    if (currentTransactions.length === 0) {
+      textToCopy += "Everyone is even! No payments needed.";
+    } else {
+      textToCopy += currentTransactions.map(t => `${t.debtor} pays ${t.creditor} $${t.amount.toFixed(2)}`).join('\n');
+    }
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      const originalText = copyBtn.innerText;
+      copyBtn.innerText = "✓ Copied!";
+      setTimeout(() => {
+        copyBtn.innerText = originalText;
+      }, 2000);
+    }).catch(err => {
+      alert("Failed to copy. Please copy manually.");
+    });
   }
 </script>
 
