@@ -17,7 +17,8 @@
       --text: #0f172a;
       --text-muted: #64748b;
       --border: #e2e8f0;
-      --success: #10b981;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       --radius: 12px;
@@ -89,9 +90,6 @@
       margin: 0;
       font-size: 1.125rem;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     .form-group {
@@ -172,10 +170,36 @@
     .person-tag {
       background: var(--primary-light);
       color: var(--primary);
-      padding: 6px 12px;
+      padding: 6px 10px 6px 12px;
       border-radius: 20px;
       font-size: 0.875rem;
       font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-remove-tag {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      opacity: 0.7;
+      transition: opacity 0.2s ease, background-color 0.2s ease;
+    }
+
+    .btn-remove-tag:hover {
+      opacity: 1;
+      background-color: rgba(79, 70, 229, 0.15);
     }
 
     .checkbox-grid {
@@ -212,6 +236,22 @@
     .list-item:last-child { border-bottom: none; }
     .list-item-title { font-weight: 500; }
     .list-item-sub { font-size: 0.825rem; color: var(--text-muted); }
+
+    .btn-delete-item {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: 6px 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-delete-item:hover {
+      color: var(--danger);
+      background-color: #fef2f2;
+    }
 
     .settlement-card {
       background: #f0fdf4;
@@ -302,8 +342,8 @@
 </div>
 
 <script>
-  const people = [];
-  const expenses = [];
+  let people = [];
+  let expenses = [];
   let currentTransactions = [];
 
   function addPerson() {
@@ -316,23 +356,45 @@
     updateUI();
   }
 
+  function removePerson(index) {
+    const personToRemove = people[index];
+    people.splice(index, 1);
+
+    // Filter out expenses paid by or splitting among the removed person
+    expenses = expenses.filter(e => e.paidBy !== personToRemove).map(e => ({
+      ...e,
+      splitAmong: e.splitAmong.filter(p => p !== personToRemove)
+    })).filter(e => e.splitAmong.length > 0);
+
+    updateUI();
+    calculateSettlements();
+  }
+
   function addExpense() {
     const desc = document.getElementById('expenseDesc').value.trim();
-    const amount = parseFloat(document.getElementById('expenseAmount').value);
+    const amountFloat = parseFloat(document.getElementById('expenseAmount').value);
     const paidBy = document.getElementById('paidBySelect').value;
     
     const checkboxes = document.querySelectorAll('#splitAmongCheckboxes input:checked');
     const splitAmong = Array.from(checkboxes).map(cb => cb.value);
 
-    if (!desc || isNaN(amount) || amount <= 0 || !paidBy || splitAmong.length === 0) {
+    if (!desc || isNaN(amountFloat) || amountFloat <= 0 || !paidBy || splitAmong.length === 0) {
       alert("Please fill in all expense details and select at least one person sharing the expense.");
       return;
     }
 
-    expenses.push({ desc, amount, paidBy, splitAmong });
+    const amountCents = Math.round(amountFloat * 100);
+
+    expenses.push({ desc, amountCents, paidBy, splitAmong });
     
     document.getElementById('expenseDesc').value = '';
     document.getElementById('expenseAmount').value = '';
+    updateUI();
+    calculateSettlements();
+  }
+
+  function removeExpense(index) {
+    expenses.splice(index, 1);
     updateUI();
     calculateSettlements();
   }
@@ -343,7 +405,12 @@
     if (people.length === 0) {
       peopleTags.innerHTML = `<span class="empty-state">No participants added yet.</span>`;
     } else {
-      peopleTags.innerHTML = people.map(p => `<span class="person-tag">${p}</span>`).join('');
+      peopleTags.innerHTML = people.map((p, i) => `
+        <span class="person-tag">
+          ${p}
+          <button class="btn-remove-tag" onclick="removePerson(${i})" title="Remove ${p}">✕</button>
+        </span>
+      `).join('');
     }
 
     // 2. Update Paid By Dropdown
@@ -363,13 +430,16 @@
     if (expenses.length === 0) {
       expenseList.innerHTML = `<div class="empty-state">No expenses logged yet.</div>`;
     } else {
-      expenseList.innerHTML = expenses.map(e => `
+      expenseList.innerHTML = expenses.map((e, i) => `
         <div class="list-item">
           <div>
             <div class="list-item-title">${e.desc}</div>
             <div class="list-item-sub">Paid by <strong>${e.paidBy}</strong> for ${e.splitAmong.join(', ')}</div>
           </div>
-          <div style="font-weight: 600;">$${e.amount.toFixed(2)}</div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-weight: 600;">$${(e.amountCents / 100).toFixed(2)}</span>
+            <button class="btn-delete-item" onclick="removeExpense(${i})" title="Delete expense">✕</button>
+          </div>
         </div>
       `).join('');
     }
@@ -379,18 +449,29 @@
     const balances = {};
     people.forEach(p => balances[p] = 0);
 
-    expenses.forEach(({ paidBy, amount, splitAmong }) => {
-      const share = amount / splitAmong.length;
-      balances[paidBy] += amount;
-      splitAmong.forEach(person => balances[person] -= share);
+    expenses.forEach(({ paidBy, amountCents, splitAmong }) => {
+      balances[paidBy] += amountCents;
+
+      const numPeople = splitAmong.length;
+      const baseShare = Math.floor(amountCents / numPeople);
+      let remainderCents = amountCents % numPeople;
+
+      splitAmong.forEach(person => {
+        let personShare = baseShare;
+        if (remainderCents > 0) {
+          personShare += 1;
+          remainderCents--;
+        }
+        balances[person] -= personShare;
+      });
     });
 
     const debtors = [];
     const creditors = [];
 
     for (const [person, balance] of Object.entries(balances)) {
-      if (balance < -0.01) debtors.push({ person, amount: -balance });
-      else if (balance > 0.01) creditors.push({ person, amount: balance });
+      if (balance < 0) debtors.push({ person, amountCents: -balance });
+      else if (balance > 0) creditors.push({ person, amountCents: balance });
     }
 
     currentTransactions = [];
@@ -399,15 +480,19 @@
     while (i < debtors.length && j < creditors.length) {
       const debtor = debtors[i];
       const creditor = creditors[j];
-      const settledAmount = Math.min(debtor.amount, creditor.amount);
+      const settledCents = Math.min(debtor.amountCents, creditor.amountCents);
 
-      currentTransactions.push({ debtor: debtor.person, creditor: creditor.person, amount: settledAmount });
+      currentTransactions.push({ 
+        debtor: debtor.person, 
+        creditor: creditor.person, 
+        amountCents: settledCents 
+      });
 
-      debtor.amount -= settledAmount;
-      creditor.amount -= settledAmount;
+      debtor.amountCents -= settledCents;
+      creditor.amountCents -= settledCents;
 
-      if (debtor.amount < 0.01) i++;
-      if (creditor.amount < 0.01) j++;
+      if (debtor.amountCents === 0) i++;
+      if (creditor.amountCents === 0) j++;
     }
 
     const container = document.getElementById('settlementResults');
@@ -419,7 +504,7 @@
       container.innerHTML = currentTransactions.map(t => `
         <div class="settlement-card">
           <span class="settlement-text"><strong>${t.debtor}</strong> pays <strong>${t.creditor}</strong></span>
-          <span class="settlement-amount">$${t.amount.toFixed(2)}</span>
+          <span class="settlement-amount">$${(t.amountCents / 100).toFixed(2)}</span>
         </div>
       `).join('');
     }
@@ -433,14 +518,14 @@
       return;
     }
 
-    const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalCents = expenses.reduce((sum, e) => sum + e.amountCents, 0);
 
     let textToCopy = "📝 EXPENSE SUMMARY\n";
-    textToCopy += `Total Spent: $${totalAmount.toFixed(2)}\n`;
+    textToCopy += `Total Spent: $${(totalCents / 100).toFixed(2)}\n`;
     textToCopy += "-----------------------------------\n";
     
     expenses.forEach(e => {
-      textToCopy += `• ${e.desc}: $${e.amount.toFixed(2)} (Paid by ${e.paidBy} for ${e.splitAmong.join(', ')})\n`;
+      textToCopy += `• ${e.desc}: $${(e.amountCents / 100).toFixed(2)} (Paid by ${e.paidBy} for ${e.splitAmong.join(', ')})\n`;
     });
 
     textToCopy += "\n💰 SETTLEMENT PLAN\n";
@@ -449,7 +534,7 @@
     if (currentTransactions.length === 0) {
       textToCopy += "Everyone is even! No payments needed.";
     } else {
-      textToCopy += currentTransactions.map(t => `• ${t.debtor} pays ${t.creditor} $${t.amount.toFixed(2)}`).join('\n');
+      textToCopy += currentTransactions.map(t => `• ${t.debtor} pays ${t.creditor} $${(t.amountCents / 100).toFixed(2)}`).join('\n');
     }
 
     navigator.clipboard.writeText(textToCopy).then(() => {
