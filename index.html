@@ -12,14 +12,13 @@
       --primary: #4f46e5;
       --primary-hover: #4338ca;
       --primary-light: #eef2ff;
-      --bg: #f1f5f9;
+      --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
       --text-muted: #64748b;
       --border: #e2e8f0;
       --danger: #ef4444;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
       --radius: 12px;
     }
 
@@ -30,102 +29,111 @@
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 32px 16px;
+      padding: 24px 16px;
       line-height: 1.5;
     }
 
     .app-header {
       text-align: center;
-      max-width: 800px;
-      margin: 0 auto 32px auto;
+      max-width: 600px;
+      margin: 0 auto 24px auto;
     }
 
     .app-header h1 {
       margin: 0;
-      font-size: 2rem;
+      font-size: 1.75rem;
       font-weight: 700;
       letter-spacing: -0.025em;
     }
 
     .app-header p {
-      margin: 8px 0 0 0;
+      margin: 6px 0 0 0;
       color: var(--text-muted);
+      font-size: 0.9rem;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 600px;
       margin: 0 auto;
-      display: grid;
-      gap: 24px;
-      grid-template-columns: 1fr;
-    }
-
-    @media (min-width: 768px) {
-      .container { grid-template-columns: 1fr 1fr; }
-      .full-width { grid-column: span 2; }
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .card {
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--border);
-      transition: box-shadow 0.2s ease;
-    }
-
-    .card:hover {
+      padding: 20px;
       box-shadow: var(--shadow);
+      border: 1px solid var(--border);
     }
 
-    .card-header-actions {
+    .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .card-title {
       margin: 0;
-      font-size: 1.125rem;
+      font-size: 1rem;
       font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-badge {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
     }
 
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
     }
 
     label {
       display: block;
       margin-bottom: 6px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--text);
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
     }
 
     input[type="text"], input[type="number"], select {
       width: 100%;
-      padding: 10px 14px;
+      padding: 10px 12px;
       border: 1px solid var(--border);
       border-radius: 8px;
       font-family: inherit;
       font-size: 0.95rem;
       color: var(--text);
       background-color: #fff;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
 
     input[type="text"]:focus, input[type="number"]:focus, select:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
     }
 
     .split-toggle-group {
       display: flex;
-      gap: 8px;
       background: var(--bg);
-      padding: 4px;
+      padding: 3px;
       border-radius: 8px;
       border: 1px solid var(--border);
     }
@@ -139,15 +147,14 @@
       font-size: 0.85rem;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s ease;
+      font-weight: 600;
+      transition: all 0.15s ease;
     }
 
     .split-toggle-btn.active {
       background: var(--card-bg);
       color: var(--primary);
-      font-weight: 600;
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
     }
 
     .input-btn-group {
@@ -159,48 +166,47 @@
       background-color: var(--primary);
       color: white;
       border: none;
-      padding: 10px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       font-family: inherit;
-      font-size: 0.925rem;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease, transform 0.1s ease;
+      transition: background-color 0.15s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 6px;
     }
 
     button:hover { background-color: var(--primary-hover); }
-    button:active { transform: scale(0.98); }
 
     .btn-secondary {
-      background-color: transparent;
+      background-color: var(--primary-light);
       color: var(--primary);
-      border: 1px solid var(--primary);
-      padding: 6px 14px;
-      font-size: 0.85rem;
+      padding: 6px 12px;
+      font-size: 0.825rem;
     }
 
     .btn-secondary:hover {
-      background-color: var(--primary-light);
+      background-color: #e0e7ff;
     }
 
-    .btn-block { width: 100%; margin-top: 8px; }
+    .btn-block { width: 100%; margin-top: 6px; }
 
     .tags-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
+      gap: 6px;
+      margin-top: 10px;
     }
 
     .person-tag {
       background: var(--primary-light);
       color: var(--primary);
-      padding: 6px 10px 6px 12px;
-      border-radius: 20px;
-      font-size: 0.875rem;
+      padding: 4px 8px 4px 10px;
+      border-radius: 16px;
+      font-size: 0.85rem;
       font-weight: 500;
       display: inline-flex;
       align-items: center;
@@ -212,7 +218,7 @@
       border: none;
       color: var(--primary);
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 0.9rem;
       padding: 0;
       line-height: 1;
       display: flex;
@@ -222,7 +228,6 @@
       height: 16px;
       border-radius: 50%;
       opacity: 0.7;
-      transition: opacity 0.2s ease, background-color 0.2s ease;
     }
 
     .btn-remove-tag:hover {
@@ -232,16 +237,14 @@
 
     .checkbox-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       gap: 8px;
-      margin-top: 8px;
     }
 
     .exact-grid {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 8px;
+      gap: 8px;
     }
 
     .exact-row {
@@ -255,39 +258,37 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 12px;
+      padding: 8px 10px;
       border: 1px solid var(--border);
       border-radius: 8px;
       cursor: pointer;
       font-size: 0.875rem;
       user-select: none;
-      transition: border-color 0.2s ease;
+      background: #fff;
     }
 
-    .checkbox-card:hover { border-color: var(--primary); }
     .checkbox-card input { accent-color: var(--primary); }
 
     .list-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
+      padding: 10px 0;
       border-bottom: 1px solid var(--border);
     }
 
     .list-item:last-child { border-bottom: none; }
-    .list-item-title { font-weight: 500; }
-    .list-item-sub { font-size: 0.825rem; color: var(--text-muted); }
+    .list-item-title { font-weight: 600; font-size: 0.95rem; }
+    .list-item-sub { font-size: 0.8rem; color: var(--text-muted); }
 
     .btn-delete-item {
       background: transparent;
       color: var(--text-muted);
       border: none;
-      padding: 6px 10px;
-      font-size: 1rem;
+      padding: 4px 8px;
+      font-size: 0.9rem;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
     .btn-delete-item:hover {
@@ -299,21 +300,22 @@
       background: #f0fdf4;
       border: 1px solid #bbf7d0;
       border-radius: 8px;
-      padding: 14px 16px;
-      margin-bottom: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .settlement-text { font-weight: 500; color: #166534; }
-    .settlement-amount { font-weight: 700; color: #15803d; }
+    .settlement-card:last-child { margin-bottom: 0; }
+    .settlement-text { font-weight: 500; color: #166534; font-size: 0.9rem; }
+    .settlement-amount { font-weight: 700; color: #15803d; font-size: 1rem; }
 
     .empty-state {
       text-align: center;
       color: var(--text-muted);
-      font-size: 0.9rem;
-      padding: 24px 0;
+      font-size: 0.85rem;
+      padding: 12px 0;
     }
   </style>
 </head>
@@ -321,16 +323,18 @@
 
 <header class="app-header">
   <h1>Bill Splitter</h1>
-  <p>Add group members, record expenses, and get the simplest path to settle up.</p>
+  <p>Track group expenses and calculate whole-dollar settlements.</p>
 </header>
 
 <div class="container">
   
   <div class="card">
-    <h2 class="card-title" style="margin-bottom: 16px;">1. Participants</h2>
+    <div class="card-header">
+      <h2 class="card-title"><span class="step-badge">1</span> Participants</h2>
+    </div>
     <div class="form-group">
       <div class="input-btn-group">
-        <input type="text" id="personName" placeholder="e.g. Alex" onkeydown="if(event.key==='Enter') addPerson()">
+        <input type="text" id="personName" placeholder="Enter name" onkeydown="if(event.key==='Enter') addPerson()">
         <button type="button" onclick="addPerson()">Add</button>
       </div>
     </div>
@@ -340,10 +344,8 @@
   </div>
 
   <div class="card">
-    <h2 class="card-title" style="margin-bottom: 16px;">2. Add Expense</h2>
-    <div class="form-group">
-      <label for="expenseDesc">Description</label>
-      <input type="text" id="expenseDesc" placeholder="e.g. Dinner, Taxi">
+    <div class="card-header">
+      <h2 class="card-title"><span class="step-badge">2</span> Add Expense</h2>
     </div>
 
     <div class="form-group">
@@ -354,9 +356,14 @@
       </div>
     </div>
 
+    <div class="form-group">
+      <label for="expenseDesc">Description</label>
+      <input type="text" id="expenseDesc" placeholder="e.g. Dinner, Taxi">
+    </div>
+
     <div class="form-group" id="totalAmountGroup">
       <label for="expenseAmount">Total Amount ($)</label>
-      <input type="number" id="expenseAmount" step="0.01" placeholder="0.00">
+      <input type="number" id="expenseAmount" step="1" min="1" placeholder="0">
     </div>
 
     <div class="form-group">
@@ -368,23 +375,26 @@
       <label id="splitAmongLabel">Split Among</label>
       <div id="splitAmongContainer"></div>
     </div>
+
     <button type="button" class="btn-block" onclick="addExpense()">Add Expense</button>
   </div>
 
-  <div class="card full-width">
-    <h2 class="card-title" style="margin-bottom: 16px;">3. Expenses Summary</h2>
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title"><span class="step-badge">3</span> Expenses Summary</h2>
+    </div>
     <div id="expenseList">
       <div class="empty-state">No expenses logged yet.</div>
     </div>
   </div>
 
-  <div class="card full-width">
-    <div class="card-header-actions">
-      <h2 class="card-title">4. Settlement Plan</h2>
-      <button type="button" id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Summary & Plan</button>
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title"><span class="step-badge">4</span> Settlement Plan</h2>
+      <button type="button" id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Summary</button>
     </div>
     <div id="settlementResults">
-      <div class="empty-state">Add participants and expenses to generate a settlement plan.</div>
+      <div class="empty-state">Add participants and expenses to generate plan.</div>
     </div>
   </div>
 
@@ -402,16 +412,13 @@
 
   function setSplitMode(mode) {
     splitMode = mode;
-    const btnEven = document.getElementById('btnSplitEven');
-    const btnExact = document.getElementById('btnSplitExact');
-    if (btnEven) btnEven.classList.toggle('active', mode === 'even');
-    if (btnExact) btnExact.classList.toggle('active', mode === 'exact');
+    document.getElementById('btnSplitEven').classList.toggle('active', mode === 'even');
+    document.getElementById('btnSplitExact').classList.toggle('active', mode === 'exact');
     renderSplitContainer();
   }
 
   function addPerson() {
     const input = document.getElementById('personName');
-    if (!input) return;
     const name = input.value.trim();
     if (!name || people.includes(name)) return;
 
@@ -421,15 +428,14 @@
   }
 
   function removePerson(index) {
-    if (index < 0 || index >= people.length) return;
     const personToRemove = people[index];
     people.splice(index, 1);
 
     expenses = expenses.map(e => {
       const newSplits = { ...e.splits };
       delete newSplits[personToRemove];
-      const newTotalCents = Object.values(newSplits).reduce((sum, val) => sum + val, 0);
-      return { ...e, splits: newSplits, amountCents: newTotalCents };
+      const newTotal = Object.values(newSplits).reduce((sum, val) => sum + val, 0);
+      return { ...e, splits: newSplits, amount: newTotal };
     }).filter(e => e.paidBy !== personToRemove && Object.keys(e.splits).length > 0);
 
     updateUI();
@@ -441,7 +447,7 @@
     if (!container) return;
     
     if (people.length === 0) {
-      container.innerHTML = `<span class="empty-state" style="padding: 8px 0;">Add participants above first.</span>`;
+      container.innerHTML = `<span class="empty-state">Add participants above first.</span>`;
       return;
     }
 
@@ -463,7 +469,7 @@
               <label class="checkbox-card" style="flex: 1;">
                 <input type="checkbox" value="${p}" class="split-exact-cb" checked onchange="toggleExactInput('${p}')"> ${p}
               </label>
-              <input type="number" step="0.01" placeholder="0.00" class="exact-input" id="exact-input-${p}" style="width: 120px;">
+              <input type="number" step="1" min="0" placeholder="0" class="exact-input" id="exact-input-${p}" style="width: 100px;">
             </div>
           `).join('')}
         </div>
@@ -481,12 +487,8 @@
   }
 
   function addExpense() {
-    const descInput = document.getElementById('expenseDesc');
-    const paidBySelect = document.getElementById('paidBySelect');
-    if (!descInput || !paidBySelect) return;
-
-    const desc = descInput.value.trim();
-    const paidBy = paidBySelect.value;
+    const desc = document.getElementById('expenseDesc').value.trim();
+    const paidBy = document.getElementById('paidBySelect').value;
     
     if (!desc || !paidBy) {
       alert("Please enter a description and select who paid.");
@@ -494,17 +496,16 @@
     }
 
     let splits = {};
-    let totalCents = 0;
+    let total = 0;
 
     if (splitMode === 'even') {
-      const amountInput = document.getElementById('expenseAmount');
-      const amountFloat = amountInput ? parseFloat(amountInput.value) : 0;
-      if (isNaN(amountFloat) || amountFloat <= 0) {
-        alert("Please enter a valid expense total amount.");
+      const amountVal = parseInt(document.getElementById('expenseAmount').value, 10);
+      if (isNaN(amountVal) || amountVal <= 0) {
+        alert("Please enter a valid dollar amount.");
         return;
       }
 
-      totalCents = Math.round(amountFloat * 100);
+      total = Math.round(amountVal);
       const selected = Array.from(document.querySelectorAll('.split-even-cb:checked')).map(cb => cb.value);
 
       if (selected.length === 0) {
@@ -513,14 +514,14 @@
       }
 
       const numPeople = selected.length;
-      const baseShare = Math.floor(totalCents / numPeople);
-      let remainderCents = totalCents % numPeople;
+      const baseShare = Math.floor(total / numPeople);
+      let remainder = total % numPeople;
 
       selected.forEach(person => {
         let share = baseShare;
-        if (remainderCents > 0) {
+        if (remainder > 0) {
           share += 1;
-          remainderCents--;
+          remainder--;
         }
         splits[person] = share;
       });
@@ -536,44 +537,40 @@
       checkedBoxes.forEach(cb => {
         const person = cb.value;
         const inputEl = document.getElementById(`exact-input-${person}`);
-        const val = inputEl ? parseFloat(inputEl.value) : NaN;
+        const val = inputEl ? parseInt(inputEl.value, 10) : NaN;
         if (isNaN(val) || val <= 0) {
           hasInvalidAmount = true;
         } else {
-          const shareCents = Math.round(val * 100);
-          splits[person] = shareCents;
-          totalCents += shareCents;
+          const share = Math.round(val);
+          splits[person] = share;
+          total += share;
         }
       });
 
       if (hasInvalidAmount) {
-        alert("Please enter a valid amount greater than 0 for all selected participants.");
+        alert("Please enter a valid whole dollar amount for all selected participants.");
         return;
       }
 
-      const totalInput = document.getElementById('expenseAmount');
-      const totalInputVal = totalInput ? parseFloat(totalInput.value) : NaN;
+      const totalInputVal = parseInt(document.getElementById('expenseAmount').value, 10);
       if (!isNaN(totalInputVal) && totalInputVal > 0) {
-        const expectedTotalCents = Math.round(totalInputVal * 100);
-        if (expectedTotalCents !== totalCents) {
-          alert(`The sum of exact shares ($${(totalCents / 100).toFixed(2)}) does not match Total Amount ($${totalInputVal.toFixed(2)}).`);
+        if (totalInputVal !== total) {
+          alert(`The sum of exact shares ($${total}) does not match Total Amount ($${totalInputVal}).`);
           return;
         }
       }
     }
 
-    expenses.push({ desc, amountCents: totalCents, paidBy, splits, splitMode });
+    expenses.push({ desc, amount: total, paidBy, splits });
     
-    if (descInput) descInput.value = '';
-    const amountInput = document.getElementById('expenseAmount');
-    if (amountInput) amountInput.value = '';
+    document.getElementById('expenseDesc').value = '';
+    document.getElementById('expenseAmount').value = '';
     
     updateUI();
     calculateSettlements();
   }
 
   function removeExpense(index) {
-    if (index < 0 || index >= expenses.length) return;
     expenses.splice(index, 1);
     updateUI();
     calculateSettlements();
@@ -581,50 +578,44 @@
 
   function updateUI() {
     const peopleTags = document.getElementById('peopleTags');
-    if (peopleTags) {
-      if (people.length === 0) {
-        peopleTags.innerHTML = `<span class="empty-state">No participants added yet.</span>`;
-      } else {
-        peopleTags.innerHTML = people.map((p, i) => `
-          <span class="person-tag">
-            ${p}
-            <button type="button" class="btn-remove-tag" onclick="removePerson(${i})" title="Remove ${p}">✕</button>
-          </span>
-        `).join('');
-      }
+    if (people.length === 0) {
+      peopleTags.innerHTML = `<span class="empty-state">No participants added yet.</span>`;
+    } else {
+      peopleTags.innerHTML = people.map((p, i) => `
+        <span class="person-tag">
+          ${p}
+          <button type="button" class="btn-remove-tag" onclick="removePerson(${i})" title="Remove ${p}">✕</button>
+        </span>
+      `).join('');
     }
 
     const paidBySelect = document.getElementById('paidBySelect');
-    if (paidBySelect) {
-      paidBySelect.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join('');
-    }
+    paidBySelect.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join('');
 
     renderSplitContainer();
 
     const expenseList = document.getElementById('expenseList');
-    if (expenseList) {
-      if (expenses.length === 0) {
-        expenseList.innerHTML = `<div class="empty-state">No expenses logged yet.</div>`;
-      } else {
-        expenseList.innerHTML = expenses.map((e, i) => {
-          const splitDetails = Object.entries(e.splits)
-            .map(([p, cents]) => `${p} ($${(cents / 100).toFixed(2)})`)
-            .join(', ');
+    if (expenses.length === 0) {
+      expenseList.innerHTML = `<div class="empty-state">No expenses logged yet.</div>`;
+    } else {
+      expenseList.innerHTML = expenses.map((e, i) => {
+        const splitDetails = Object.entries(e.splits)
+          .map(([p, amt]) => `${p} ($${amt})`)
+          .join(', ');
 
-          return `
-            <div class="list-item">
-              <div>
-                <div class="list-item-title">${e.desc}</div>
-                <div class="list-item-sub">Paid by <strong>${e.paidBy}</strong> — ${splitDetails}</div>
-              </div>
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <span style="font-weight: 600;">$${(e.amountCents / 100).toFixed(2)}</span>
-                <button type="button" class="btn-delete-item" onclick="removeExpense(${i})" title="Delete expense">✕</button>
-              </div>
+        return `
+          <div class="list-item">
+            <div>
+              <div class="list-item-title">${e.desc}</div>
+              <div class="list-item-sub">Paid by <strong>${e.paidBy}</strong> — ${splitDetails}</div>
             </div>
-          `;
-        }).join('');
-      }
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-weight: 700;">$${e.amount}</span>
+              <button type="button" class="btn-delete-item" onclick="removeExpense(${i})" title="Delete expense">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
   }
 
@@ -632,13 +623,13 @@
     const balances = {};
     people.forEach(p => balances[p] = 0);
 
-    expenses.forEach(({ paidBy, amountCents, splits }) => {
+    expenses.forEach(({ paidBy, amount, splits }) => {
       if (balances.hasOwnProperty(paidBy)) {
-        balances[paidBy] += amountCents;
+        balances[paidBy] += amount;
       }
-      for (const [person, shareCents] of Object.entries(splits)) {
+      for (const [person, share] of Object.entries(splits)) {
         if (balances.hasOwnProperty(person)) {
-          balances[person] -= shareCents;
+          balances[person] -= share;
         }
       }
     });
@@ -647,8 +638,8 @@
     const creditors = [];
 
     for (const [person, balance] of Object.entries(balances)) {
-      if (balance < 0) debtors.push({ person, amountCents: -balance });
-      else if (balance > 0) creditors.push({ person, amountCents: balance });
+      if (balance < 0) debtors.push({ person, amount: -balance });
+      else if (balance > 0) creditors.push({ person, amount: balance });
     }
 
     currentTransactions = [];
@@ -657,33 +648,31 @@
     while (i < debtors.length && j < creditors.length) {
       const debtor = debtors[i];
       const creditor = creditors[j];
-      const settledCents = Math.min(debtor.amountCents, creditor.amountCents);
+      const settled = Math.min(debtor.amount, creditor.amount);
 
       currentTransactions.push({ 
         debtor: debtor.person, 
         creditor: creditor.person, 
-        amountCents: settledCents 
+        amount: settled 
       });
 
-      debtor.amountCents -= settledCents;
-      creditor.amountCents -= settledCents;
+      debtor.amount -= settled;
+      creditor.amount -= settled;
 
-      if (debtor.amountCents === 0) i++;
-      if (creditor.amountCents === 0) j++;
+      if (debtor.amount === 0) i++;
+      if (creditor.amount === 0) j++;
     }
 
     const container = document.getElementById('settlementResults');
-    if (!container) return;
-
     if (expenses.length === 0) {
-      container.innerHTML = `<div class="empty-state">Add participants and expenses to generate a settlement plan.</div>`;
+      container.innerHTML = `<div class="empty-state">Add participants and expenses to generate plan.</div>`;
     } else if (currentTransactions.length === 0) {
       container.innerHTML = `<div class="settlement-card"><span class="settlement-text">Everyone is even! No payments needed.</span></div>`;
     } else {
       container.innerHTML = currentTransactions.map(t => `
         <div class="settlement-card">
           <span class="settlement-text"><strong>${t.debtor}</strong> pays <strong>${t.creditor}</strong></span>
-          <span class="settlement-amount">$${(t.amountCents / 100).toFixed(2)}</span>
+          <span class="settlement-amount">$${t.amount}</span>
         </div>
       `).join('');
     }
@@ -697,38 +686,30 @@
       return;
     }
 
-    const totalCents = expenses.reduce((sum, e) => sum + e.amountCents, 0);
+    const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
 
-    let textToCopy = "📝 EXPENSE SUMMARY\n";
-    textToCopy += `Total Spent: $${(totalCents / 100).toFixed(2)}\n`;
-    textToCopy += "-----------------------------------\n";
+    let text = `📊 EXPENSE SUMMARY\nTotal Spent: $${totalSpent}\n\n`;
     
     expenses.forEach(e => {
-      const splitDetails = Object.entries(e.splits)
-        .map(([p, cents]) => `${p}: $${(cents / 100).toFixed(2)}`)
-        .join(', ');
-      textToCopy += `• ${e.desc}: $${(e.amountCents / 100).toFixed(2)} (Paid by ${e.paidBy} | ${splitDetails})\n`;
+      text += `• ${e.desc}: $${e.amount} (Paid by ${e.paidBy})\n`;
     });
 
-    textToCopy += "\n💰 SETTLEMENT PLAN\n";
-    textToCopy += "-----------------------------------\n";
+    text += `\n🤝 SETTLEMENT PLAN\n`;
 
     if (currentTransactions.length === 0) {
-      textToCopy += "Everyone is even! No payments needed.";
+      text += `Everyone is even!`;
     } else {
-      textToCopy += currentTransactions.map(t => `• ${t.debtor} pays ${t.creditor} $${(t.amountCents / 100).toFixed(2)}`).join('\n');
+      text += currentTransactions.map(t => `• ${t.debtor} → ${t.creditor}: $${t.amount}`).join('\n');
     }
 
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      if (copyBtn) {
-        const originalText = copyBtn.innerText;
-        copyBtn.innerText = "✓ Copied!";
-        setTimeout(() => {
-          copyBtn.innerText = originalText;
-        }, 2000);
-      }
-    }).catch(err => {
-      alert("Failed to copy. Please copy manually.");
+    navigator.clipboard.writeText(text).then(() => {
+      const originalText = copyBtn.innerText;
+      copyBtn.innerText = "✓ Copied";
+      setTimeout(() => {
+        copyBtn.innerText = originalText;
+      }, 2000);
+    }).catch(() => {
+      alert("Failed to copy automatically.");
     });
   }
 </script>
