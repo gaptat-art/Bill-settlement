@@ -131,7 +131,7 @@
       color: var(--text);
       background-color: #fff;
       transition: all 0.2s ease;
-      text-transform: none; /* Prevent automatic uppercase styling */
+      text-transform: none;
     }
 
     input[type="text"]:focus, input[type="number"]:focus, select:focus {
@@ -218,9 +218,9 @@
     }
 
     .person-badge {
-      padding: 5px 10px;
+      padding: 4px 10px;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.825rem;
       font-weight: 600;
       display: inline-flex;
       align-items: center;
@@ -287,14 +287,14 @@
     .list-item {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       padding: 12px 0;
       border-bottom: 1px solid var(--border);
     }
 
     .list-item:last-child { border-bottom: none; }
     .list-item-title { font-weight: 700; font-size: 0.95rem; }
-    .list-item-sub { font-size: 0.825rem; color: var(--text-muted); margin-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .list-item-sub { font-size: 0.825rem; color: var(--text-muted); margin-top: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 
     .btn-delete-item {
       background: transparent;
@@ -656,8 +656,8 @@
       expenseList.innerHTML = `<div class="empty-state">No expenses logged yet.</div>`;
     } else {
       expenseList.innerHTML = expenses.map((e, i) => {
-        const splitBadges = Object.entries(e.splits)
-          .map(([p, amt]) => `${getPersonBadgeHtml(p)} ($${amt})`)
+        const splitBadges = Object.keys(e.splits)
+          .map(p => getPersonBadgeHtml(p))
           .join(' ');
 
         return `
@@ -666,7 +666,7 @@
               <div class="list-item-title">${escapeHtml(e.desc)}</div>
               <div class="list-item-sub">
                 <span>Paid by</span> ${getPersonBadgeHtml(e.paidBy)}
-                <span>— Split:</span> ${splitBadges}
+                <span>• Split:</span> ${splitBadges}
               </div>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -755,7 +755,11 @@
     let text = `Total Spent: $${totalSpent}\n\nExpenses:\n`;
     
     expenses.forEach(e => {
-      text += `• ${e.desc} - $${e.amount} (${e.paidBy})\n`;
+      const splitDetails = Object.entries(e.splits)
+        .map(([p, amt]) => `${p} ($${amt})`)
+        .join(', ');
+
+      text += `• ${e.desc} - $${e.amount} (Paid by ${e.paidBy})\n  Split: ${splitDetails}\n`;
     });
 
     text += `\nSettlement Plan:\n`;
