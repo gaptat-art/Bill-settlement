@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-HK">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -357,84 +357,84 @@
 
 <div class="top-bar">
   <div class="lang-switch">
-    <button type="button" class="lang-btn active" id="langEnBtn" onclick="setLanguage('en')">English</button>
-    <button type="button" class="lang-btn" id="langZhBtn" onclick="setLanguage('zh')">繁體中文</button>
+    <button type="button" class="lang-btn" id="langEnBtn" onclick="setLanguage('en')">English</button>
+    <button type="button" class="lang-btn active" id="langZhBtn" onclick="setLanguage('zh')">繁體中文</button>
   </div>
 </div>
 
 <header class="app-header">
-  <h1 id="i18n-appTitle">Bill Splitter</h1>
-  <p id="i18n-appSub">Add group members, record expenses, and get the simplest path to settle up.</p>
+  <h1 id="i18n-appTitle">AA制 帳單計算器</h1>
+  <p id="i18n-appSub">新增成員、記錄開支，自動計算最簡結算方案。</p>
 </header>
 
 <div class="container">
   
   <div class="card">
-    <h2 class="card-title" id="i18n-step1Title" style="margin-bottom: 16px;">1. Participants</h2>
+    <h2 class="card-title" id="i18n-step1Title" style="margin-bottom: 16px;">1. 參與者</h2>
     <div class="form-group">
       <div class="input-btn-group">
-        <input type="text" id="personName" placeholder="e.g. Alex" onkeydown="if(event.key==='Enter') addPerson()">
-        <button type="button" id="i18n-addPersonBtn" onclick="addPerson()">Add</button>
+        <input type="text" id="personName" placeholder="例如：阿樂 / Alex" onkeydown="if(event.key==='Enter') addPerson()">
+        <button type="button" id="i18n-addPersonBtn" onclick="addPerson()">新增</button>
       </div>
     </div>
     <div class="tags-container" id="peopleTags">
-      <span class="empty-state" id="i18n-noParticipants">No participants added yet.</span>
+      <span class="empty-state" id="i18n-noParticipants">尚未新增參與者。</span>
     </div>
   </div>
 
   <div class="card">
-    <h2 class="card-title" id="i18n-step2Title" style="margin-bottom: 16px;">2. Add Expense</h2>
+    <h2 class="card-title" id="i18n-step2Title" style="margin-bottom: 16px;">2. 新增開支</h2>
     <div class="form-group">
-      <label for="expenseDesc" id="i18n-descLabel">Description</label>
-      <input type="text" id="expenseDesc" placeholder="e.g. Dinner, Taxi">
+      <label for="expenseDesc" id="i18n-descLabel">項目名稱</label>
+      <input type="text" id="expenseDesc" placeholder="例如：晚餐、的士">
     </div>
 
     <div class="form-group">
-      <label id="i18n-splitMethodLabel">Split Method</label>
+      <label id="i18n-splitMethodLabel">分攤方式</label>
       <div class="split-toggle-group">
-        <button type="button" class="split-toggle-btn active" id="btnSplitEven" onclick="setSplitMode('even')">Split Evenly</button>
-        <button type="button" class="split-toggle-btn" id="btnSplitExact" onclick="setSplitMode('exact')">Exact Amounts</button>
+        <button type="button" class="split-toggle-btn active" id="btnSplitEven" onclick="setSplitMode('even')">平分</button>
+        <button type="button" class="split-toggle-btn" id="btnSplitExact" onclick="setSplitMode('exact')">按指定金額</button>
       </div>
     </div>
 
     <div class="form-group" id="totalAmountGroup">
-      <label for="expenseAmount" id="i18n-totalAmountLabel">Total Amount ($)</label>
+      <label for="expenseAmount" id="i18n-totalAmountLabel">總金額 ($)</label>
       <input type="number" id="expenseAmount" step="1" min="1" placeholder="0">
     </div>
 
     <div class="form-group">
-      <label for="paidBySelect" id="i18n-paidByLabel">Paid By</label>
+      <label for="paidBySelect" id="i18n-paidByLabel">付款人</label>
       <select id="paidBySelect"></select>
     </div>
 
     <div class="form-group">
-      <label id="i18n-splitAmongLabel">Split Among</label>
+      <label id="i18n-splitAmongLabel">分攤成員</label>
       <div id="splitAmongContainer"></div>
     </div>
-    <button type="button" class="btn-block" id="i18n-addExpenseBtn" onclick="addExpense()">Add Expense</button>
+    <button type="button" class="btn-block" id="i18n-addExpenseBtn" onclick="addExpense()">新增開支</button>
   </div>
 
   <div class="card full-width">
-    <h2 class="card-title" id="i18n-step3Title" style="margin-bottom: 16px;">3. Expenses Summary</h2>
+    <h2 class="card-title" id="i18n-step3Title" style="margin-bottom: 16px;">3. 開支摘要</h2>
     <div id="expenseList">
-      <div class="empty-state" id="i18n-noExpenses">No expenses logged yet.</div>
+      <div class="empty-state" id="i18n-noExpenses">尚未記錄任何開支。</div>
     </div>
   </div>
 
   <div class="card full-width">
     <div class="card-header-actions">
-      <h2 class="card-title" id="i18n-step4Title">4. Settlement Plan</h2>
-      <button type="button" id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Summary & Plan</button>
+      <h2 class="card-title" id="i18n-step4Title">4. 結算方案</h2>
+      <button type="button" id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 複製摘要與方案</button>
     </div>
     <div id="settlementResults">
-      <div class="empty-state" id="i18n-noSettlementPrompt">Add participants and expenses to generate a settlement plan.</div>
+      <div class="empty-state" id="i18n-noSettlementPrompt">請新增參與者及開支以生成結算方案。</div>
     </div>
   </div>
 
 </div>
 
 <script>
-  let currentLang = 'en';
+  let currentLang = 'zh';
   let people = [];
   let expenses = [];
   let currentTransactions = [];
@@ -468,6 +468,8 @@
       noSettlementPrompt: "Add participants and expenses to generate a settlement plan.",
       everyoneEven: "Everyone is even! No payments needed.",
       pays: "pays",
+      formatSettlement: (debtor, creditor, amount) => `${debtor} pays ${creditor} $${amount}`,
+      formatCopyPaidBy: (paidBy) => `Paid by ${paidBy}`,
       alertDescPaidBy: "Please enter a description and select who paid.",
       alertValidAmount: "Please enter a valid whole dollar amount.",
       alertSelectParticipant: "Please select at least one person sharing the expense.",
@@ -505,6 +507,8 @@
       noSettlementPrompt: "請新增參與者及開支以生成結算方案。",
       everyoneEven: "大家已清帳，無需付款！",
       pays: "需付給",
+      formatSettlement: (debtor, creditor, amount) => `${debtor} 需付給 ${creditor} $${amount}`,
+      formatCopyPaidBy: (paidBy) => `付款人：${paidBy}`,
       alertDescPaidBy: "請輸入項目名稱並選擇付款人。",
       alertValidAmount: "請輸入有效的整數金額。",
       alertSelectParticipant: "請至少選擇一位分攤開支的成員。",
@@ -880,7 +884,7 @@
       const splitDetails = Object.entries(e.splits)
         .map(([p, amt]) => `${p}: $${amt}`)
         .join(', ');
-      textToCopy += `• ${e.desc}: $${e.amount} (${t.paidBy} ${e.paidBy} | ${splitDetails})\n`;
+      textToCopy += `• ${e.desc}: $${e.amount} (${t.formatCopyPaidBy(e.paidBy)} | ${splitDetails})\n`;
     });
 
     textToCopy += `\n${t.copyHeaderSettlement}\n`;
@@ -889,7 +893,7 @@
     if (currentTransactions.length === 0) {
       textToCopy += t.everyoneEven;
     } else {
-      textToCopy += currentTransactions.map(tr => `• ${tr.debtor} ${tr.pays} ${tr.creditor} $${tr.amount}`).join('\n');
+      textToCopy += currentTransactions.map(tr => `• ${t.formatSettlement(tr.debtor, tr.creditor, tr.amount)}`).join('\n');
     }
 
     navigator.clipboard.writeText(textToCopy).then(() => {
