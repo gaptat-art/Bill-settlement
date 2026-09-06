@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bill Splitter</title>
+  <style>
+    :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+    .container { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .card { background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    h2 { margin-top: 0; font-size: 1.25rem; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.9rem; }
+    input[type="text"], input[type="number"], select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
+    button { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; }
+    button:hover { opacity: 0.9; }
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+    .checkbox-label { font-weight: normal; font-size: 0.9rem; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { padding: 8px 0; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; }
+    .settlement-item { padding: 10px; background: #eff6ff; border-left: 4px solid var(--primary); margin-bottom: 8px; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <h2>1. Add Participants</h2>
+    <div class="form-group" style="display: flex; gap: 8px;">
+      <input type="text" id="personName" placeholder="Enter name">
+      <button onclick="addPerson()">Add</button>
+    </div>
+    <ul id="peopleList"></ul>
+  </div>
+
+  <div class="card">
+    <h2>2. Add Expense</h2>
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" id="expenseDesc" placeholder="e.g. Dinner, Taxi">
+    </div>
+    <div class="form-group">
+      <label>Amount ($)</label>
+      <input type="number" id="expenseAmount" step="0.01" placeholder="0.00">
+    </div>
+    <div class="form-group">
+      <label>Paid By</label>
+      <select id="paidBySelect"></select>
+    </div>
+    <div class="form-group">
+      <label>Split Among</label>
+      <div id="splitAmongCheckboxes" class="checkbox-group"></div>
+    </div>
+    <button onclick="addExpense()">Add Expense</button>
+  </div>
+
+  <div class="card">
+    <h2>3. Expense List</h2>
+    <ul id="expenseList"></ul>
+  </div>
+
+  <div class="card">
+    <h2>4. How to Settle Up</h2>
+    <div id="settlementResults">Add expenses to see settlements.</div>
+  </div>
+</div>
+
+<script>
+  const people = [];
+  const expenses = [];
+
+  function addPerson() {
+    const input = document.getElementById('personName');
+    const name = input.value.trim();
+    if (!name || people.includes(name)) return;
+
+    people.push(name);
+    input.value = '';
+    updateUI();
+  }
+
+  function addExpense() {
+    const desc = document.getElementById('expenseDesc').value.trim();
+    const amount = parseFloat(document.getElementById('expenseAmount').value);
+    const paidBy = document.getElementById('paidBySelect').value;
+    
+    const checkboxes = document.querySelectorAll('#splitAmongCheckboxes input:checked');
+    const splitAmong = Array.from(checkboxes).map(cb => cb.value);
+
+    if (!desc || isNaN(amount) || amount <= 0 || !paidBy || splitAmong.length === 0) {
+      alert("Please enter valid expense details.");
+      return;
+    }
+
+    expenses.push({ desc, amount, paidBy, splitAmong });
+    
+    document.getElementById('expenseDesc').value = '';
+    document.getElementById('expenseAmount').value = '';
+    updateUI();
+    calculateSettlements();
+  }
+
+  function updateUI() {
+    // Render People List
+    const peopleList = document.getElementById('peopleList');
+    peopleList.innerHTML = people.map(p => `<li>${p}</li>`).join('');
+
+    // Update Paid By Dropdown
+    const paidBySelect = document.getElementById('paidBySelect');
+    paidBySelect.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join('');
+
+    // Update Split Among Checkboxes
+    const checkboxes = document.getElementById('splitAmongCheckboxes');
+    checkboxes.innerHTML = people.map(p => `
+      <label class="checkbox-label">
+        <input type="checkbox" value="${p}" checked> ${p}
+      </label>
+    `).join('');
+
+    // Render Expense List
+    const expenseList = document.getElementById('expenseList');
+    expenseList.innerHTML = expenses.map(e => `
+      <li>
+        <span><strong>${e.desc}</strong> ($${e.amount.toFixed(2)})</span>
+        <small>Paid by ${e.paidBy} for ${e.splitAmong.join(', ')}</small>
+      </li>
+    `).join('');
+  }
+
+  function calculateSettlements() {
+    const balances = {};
+    people.forEach(p => balances[p] = 0);
+
+    expenses.forEach(({ paidBy, amount, splitAmong }) => {
+      const share = amount / splitAmong.length;
+      balances[paidBy] += amount;
+      splitAmong.forEach(person => balances[person] -= share);
+    });
+
+    const debtors = [];
+    const creditors = [];
+
+    for (const [person, balance] of Object.entries(balances)) {
+      if (balance < -0.01) debtors.push({ person, amount: -balance });
+      else if (balance > 0.01) creditors.push({ person, amount: balance });
+    }
+
+    const transactions = [];
+    let i = 0, j = 0;
+
+    while (i < debtors.length && j < creditors.length) {
+      const debtor = debtors[i];
+      const creditor = creditors[j];
+      const settledAmount = Math.min(debtor.amount, creditor.amount);
+
+      transactions.push(`${debtor.person} pays ${creditor.person} $${settledAmount.toFixed(2)}`);
+
+      debtor.amount -= settledAmount;
+      creditor.amount -= settledAmount;
+
+      if (debtor.amount < 0.01) i++;
+      if (creditor.amount < 0.01) j++;
+    }
+
+    const container = document.getElementById('settlementResults');
+    if (transactions.length === 0) {
+      container.innerHTML = "All balances are settled!";
+    } else {
+      container.innerHTML = transactions.map(t => `<div class="settlement-item">${t}</div>`).join('');
+    }
+  }
+</script>
+
+</body>
+</html>
