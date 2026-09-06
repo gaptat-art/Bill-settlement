@@ -18,7 +18,6 @@
       --text-muted: #64748b;
       --border: #e2e8f0;
       --danger: #ef4444;
-      --danger-hover: #dc2626;
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       --radius: 12px;
@@ -122,6 +121,35 @@
       box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
     }
 
+    .split-toggle-group {
+      display: flex;
+      gap: 8px;
+      background: var(--bg);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .split-toggle-btn {
+      flex: 1;
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .split-toggle-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+    }
+
     .input-btn-group {
       display: flex;
       gap: 8px;
@@ -209,6 +237,20 @@
       margin-top: 8px;
     }
 
+    .exact-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .exact-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
     .checkbox-card {
       display: flex;
       align-items: center;
@@ -284,13 +326,12 @@
 
 <div class="container">
   
-  <!-- 1. Add Participants -->
   <div class="card">
     <h2 class="card-title" style="margin-bottom: 16px;">1. Participants</h2>
     <div class="form-group">
       <div class="input-btn-group">
         <input type="text" id="personName" placeholder="e.g. Alex" onkeydown="if(event.key==='Enter') addPerson()">
-        <button onclick="addPerson()">Add</button>
+        <button type="button" onclick="addPerson()">Add</button>
       </div>
     </div>
     <div class="tags-container" id="peopleTags">
@@ -298,29 +339,38 @@
     </div>
   </div>
 
-  <!-- 2. Add Expense -->
   <div class="card">
     <h2 class="card-title" style="margin-bottom: 16px;">2. Add Expense</h2>
     <div class="form-group">
       <label for="expenseDesc">Description</label>
       <input type="text" id="expenseDesc" placeholder="e.g. Dinner, Taxi">
     </div>
+
     <div class="form-group">
-      <label for="expenseAmount">Amount ($)</label>
+      <label>Split Method</label>
+      <div class="split-toggle-group">
+        <button type="button" class="split-toggle-btn active" id="btnSplitEven" onclick="setSplitMode('even')">Split Evenly</button>
+        <button type="button" class="split-toggle-btn" id="btnSplitExact" onclick="setSplitMode('exact')">Exact Amounts</button>
+      </div>
+    </div>
+
+    <div class="form-group" id="totalAmountGroup">
+      <label for="expenseAmount">Total Amount ($)</label>
       <input type="number" id="expenseAmount" step="0.01" placeholder="0.00">
     </div>
+
     <div class="form-group">
       <label for="paidBySelect">Paid By</label>
       <select id="paidBySelect"></select>
     </div>
+
     <div class="form-group">
-      <label>Split Among</label>
-      <div id="splitAmongCheckboxes" class="checkbox-grid"></div>
+      <label id="splitAmongLabel">Split Among</label>
+      <div id="splitAmongContainer"></div>
     </div>
-    <button class="btn-block" onclick="addExpense()">Add Expense</button>
+    <button type="button" class="btn-block" onclick="addExpense()">Add Expense</button>
   </div>
 
-  <!-- 3. Expenses List -->
   <div class="card full-width">
     <h2 class="card-title" style="margin-bottom: 16px;">3. Expenses Summary</h2>
     <div id="expenseList">
@@ -328,11 +378,10 @@
     </div>
   </div>
 
-  <!-- 4. Final Settlement -->
   <div class="card full-width">
     <div class="card-header-actions">
       <h2 class="card-title">4. Settlement Plan</h2>
-      <button id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Summary & Plan</button>
+      <button type="button" id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Summary & Plan</button>
     </div>
     <div id="settlementResults">
       <div class="empty-state">Add participants and expenses to generate a settlement plan.</div>
@@ -345,9 +394,24 @@
   let people = [];
   let expenses = [];
   let currentTransactions = [];
+  let splitMode = 'even';
+
+  window.addEventListener('DOMContentLoaded', () => {
+    updateUI();
+  });
+
+  function setSplitMode(mode) {
+    splitMode = mode;
+    const btnEven = document.getElementById('btnSplitEven');
+    const btnExact = document.getElementById('btnSplitExact');
+    if (btnEven) btnEven.classList.toggle('active', mode === 'even');
+    if (btnExact) btnExact.classList.toggle('active', mode === 'exact');
+    renderSplitContainer();
+  }
 
   function addPerson() {
     const input = document.getElementById('personName');
+    if (!input) return;
     const name = input.value.trim();
     if (!name || people.includes(name)) return;
 
@@ -357,91 +421,210 @@
   }
 
   function removePerson(index) {
+    if (index < 0 || index >= people.length) return;
     const personToRemove = people[index];
     people.splice(index, 1);
 
-    // Filter out expenses paid by or splitting among the removed person
-    expenses = expenses.filter(e => e.paidBy !== personToRemove).map(e => ({
-      ...e,
-      splitAmong: e.splitAmong.filter(p => p !== personToRemove)
-    })).filter(e => e.splitAmong.length > 0);
+    expenses = expenses.map(e => {
+      const newSplits = { ...e.splits };
+      delete newSplits[personToRemove];
+      const newTotalCents = Object.values(newSplits).reduce((sum, val) => sum + val, 0);
+      return { ...e, splits: newSplits, amountCents: newTotalCents };
+    }).filter(e => e.paidBy !== personToRemove && Object.keys(e.splits).length > 0);
 
     updateUI();
     calculateSettlements();
   }
 
-  function addExpense() {
-    const desc = document.getElementById('expenseDesc').value.trim();
-    const amountFloat = parseFloat(document.getElementById('expenseAmount').value);
-    const paidBy = document.getElementById('paidBySelect').value;
+  function renderSplitContainer() {
+    const container = document.getElementById('splitAmongContainer');
+    if (!container) return;
     
-    const checkboxes = document.querySelectorAll('#splitAmongCheckboxes input:checked');
-    const splitAmong = Array.from(checkboxes).map(cb => cb.value);
-
-    if (!desc || isNaN(amountFloat) || amountFloat <= 0 || !paidBy || splitAmong.length === 0) {
-      alert("Please fill in all expense details and select at least one person sharing the expense.");
+    if (people.length === 0) {
+      container.innerHTML = `<span class="empty-state" style="padding: 8px 0;">Add participants above first.</span>`;
       return;
     }
 
-    const amountCents = Math.round(amountFloat * 100);
+    if (splitMode === 'even') {
+      container.innerHTML = `
+        <div class="checkbox-grid">
+          ${people.map(p => `
+            <label class="checkbox-card">
+              <input type="checkbox" value="${p}" class="split-even-cb" checked> ${p}
+            </label>
+          `).join('')}
+        </div>
+      `;
+    } else {
+      container.innerHTML = `
+        <div class="exact-grid">
+          ${people.map(p => `
+            <div class="exact-row">
+              <label class="checkbox-card" style="flex: 1;">
+                <input type="checkbox" value="${p}" class="split-exact-cb" checked onchange="toggleExactInput('${p}')"> ${p}
+              </label>
+              <input type="number" step="0.01" placeholder="0.00" class="exact-input" id="exact-input-${p}" style="width: 120px;">
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+  }
 
-    expenses.push({ desc, amountCents, paidBy, splitAmong });
+  function toggleExactInput(person) {
+    const cb = document.querySelector(`.split-exact-cb[value="${person}"]`);
+    const input = document.getElementById(`exact-input-${person}`);
+    if (input && cb) {
+      input.disabled = !cb.checked;
+      if (!cb.checked) input.value = '';
+    }
+  }
+
+  function addExpense() {
+    const descInput = document.getElementById('expenseDesc');
+    const paidBySelect = document.getElementById('paidBySelect');
+    if (!descInput || !paidBySelect) return;
+
+    const desc = descInput.value.trim();
+    const paidBy = paidBySelect.value;
     
-    document.getElementById('expenseDesc').value = '';
-    document.getElementById('expenseAmount').value = '';
+    if (!desc || !paidBy) {
+      alert("Please enter a description and select who paid.");
+      return;
+    }
+
+    let splits = {};
+    let totalCents = 0;
+
+    if (splitMode === 'even') {
+      const amountInput = document.getElementById('expenseAmount');
+      const amountFloat = amountInput ? parseFloat(amountInput.value) : 0;
+      if (isNaN(amountFloat) || amountFloat <= 0) {
+        alert("Please enter a valid expense total amount.");
+        return;
+      }
+
+      totalCents = Math.round(amountFloat * 100);
+      const selected = Array.from(document.querySelectorAll('.split-even-cb:checked')).map(cb => cb.value);
+
+      if (selected.length === 0) {
+        alert("Please select at least one person sharing the expense.");
+        return;
+      }
+
+      const numPeople = selected.length;
+      const baseShare = Math.floor(totalCents / numPeople);
+      let remainderCents = totalCents % numPeople;
+
+      selected.forEach(person => {
+        let share = baseShare;
+        if (remainderCents > 0) {
+          share += 1;
+          remainderCents--;
+        }
+        splits[person] = share;
+      });
+
+    } else {
+      const checkedBoxes = document.querySelectorAll('.split-exact-cb:checked');
+      if (checkedBoxes.length === 0) {
+        alert("Please select at least one person sharing the expense.");
+        return;
+      }
+
+      let hasInvalidAmount = false;
+      checkedBoxes.forEach(cb => {
+        const person = cb.value;
+        const inputEl = document.getElementById(`exact-input-${person}`);
+        const val = inputEl ? parseFloat(inputEl.value) : NaN;
+        if (isNaN(val) || val <= 0) {
+          hasInvalidAmount = true;
+        } else {
+          const shareCents = Math.round(val * 100);
+          splits[person] = shareCents;
+          totalCents += shareCents;
+        }
+      });
+
+      if (hasInvalidAmount) {
+        alert("Please enter a valid amount greater than 0 for all selected participants.");
+        return;
+      }
+
+      const totalInput = document.getElementById('expenseAmount');
+      const totalInputVal = totalInput ? parseFloat(totalInput.value) : NaN;
+      if (!isNaN(totalInputVal) && totalInputVal > 0) {
+        const expectedTotalCents = Math.round(totalInputVal * 100);
+        if (expectedTotalCents !== totalCents) {
+          alert(`The sum of exact shares ($${(totalCents / 100).toFixed(2)}) does not match Total Amount ($${totalInputVal.toFixed(2)}).`);
+          return;
+        }
+      }
+    }
+
+    expenses.push({ desc, amountCents: totalCents, paidBy, splits, splitMode });
+    
+    if (descInput) descInput.value = '';
+    const amountInput = document.getElementById('expenseAmount');
+    if (amountInput) amountInput.value = '';
+    
     updateUI();
     calculateSettlements();
   }
 
   function removeExpense(index) {
+    if (index < 0 || index >= expenses.length) return;
     expenses.splice(index, 1);
     updateUI();
     calculateSettlements();
   }
 
   function updateUI() {
-    // 1. Render People Tags
     const peopleTags = document.getElementById('peopleTags');
-    if (people.length === 0) {
-      peopleTags.innerHTML = `<span class="empty-state">No participants added yet.</span>`;
-    } else {
-      peopleTags.innerHTML = people.map((p, i) => `
-        <span class="person-tag">
-          ${p}
-          <button class="btn-remove-tag" onclick="removePerson(${i})" title="Remove ${p}">✕</button>
-        </span>
-      `).join('');
+    if (peopleTags) {
+      if (people.length === 0) {
+        peopleTags.innerHTML = `<span class="empty-state">No participants added yet.</span>`;
+      } else {
+        peopleTags.innerHTML = people.map((p, i) => `
+          <span class="person-tag">
+            ${p}
+            <button type="button" class="btn-remove-tag" onclick="removePerson(${i})" title="Remove ${p}">✕</button>
+          </span>
+        `).join('');
+      }
     }
 
-    // 2. Update Paid By Dropdown
     const paidBySelect = document.getElementById('paidBySelect');
-    paidBySelect.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join('');
+    if (paidBySelect) {
+      paidBySelect.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join('');
+    }
 
-    // 3. Update Split Among Checkboxes
-    const checkboxes = document.getElementById('splitAmongCheckboxes');
-    checkboxes.innerHTML = people.map(p => `
-      <label class="checkbox-card">
-        <input type="checkbox" value="${p}" checked> ${p}
-      </label>
-    `).join('');
+    renderSplitContainer();
 
-    // 4. Render Expense List
     const expenseList = document.getElementById('expenseList');
-    if (expenses.length === 0) {
-      expenseList.innerHTML = `<div class="empty-state">No expenses logged yet.</div>`;
-    } else {
-      expenseList.innerHTML = expenses.map((e, i) => `
-        <div class="list-item">
-          <div>
-            <div class="list-item-title">${e.desc}</div>
-            <div class="list-item-sub">Paid by <strong>${e.paidBy}</strong> for ${e.splitAmong.join(', ')}</div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="font-weight: 600;">$${(e.amountCents / 100).toFixed(2)}</span>
-            <button class="btn-delete-item" onclick="removeExpense(${i})" title="Delete expense">✕</button>
-          </div>
-        </div>
-      `).join('');
+    if (expenseList) {
+      if (expenses.length === 0) {
+        expenseList.innerHTML = `<div class="empty-state">No expenses logged yet.</div>`;
+      } else {
+        expenseList.innerHTML = expenses.map((e, i) => {
+          const splitDetails = Object.entries(e.splits)
+            .map(([p, cents]) => `${p} ($${(cents / 100).toFixed(2)})`)
+            .join(', ');
+
+          return `
+            <div class="list-item">
+              <div>
+                <div class="list-item-title">${e.desc}</div>
+                <div class="list-item-sub">Paid by <strong>${e.paidBy}</strong> — ${splitDetails}</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-weight: 600;">$${(e.amountCents / 100).toFixed(2)}</span>
+                <button type="button" class="btn-delete-item" onclick="removeExpense(${i})" title="Delete expense">✕</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     }
   }
 
@@ -449,21 +632,15 @@
     const balances = {};
     people.forEach(p => balances[p] = 0);
 
-    expenses.forEach(({ paidBy, amountCents, splitAmong }) => {
-      balances[paidBy] += amountCents;
-
-      const numPeople = splitAmong.length;
-      const baseShare = Math.floor(amountCents / numPeople);
-      let remainderCents = amountCents % numPeople;
-
-      splitAmong.forEach(person => {
-        let personShare = baseShare;
-        if (remainderCents > 0) {
-          personShare += 1;
-          remainderCents--;
+    expenses.forEach(({ paidBy, amountCents, splits }) => {
+      if (balances.hasOwnProperty(paidBy)) {
+        balances[paidBy] += amountCents;
+      }
+      for (const [person, shareCents] of Object.entries(splits)) {
+        if (balances.hasOwnProperty(person)) {
+          balances[person] -= shareCents;
         }
-        balances[person] -= personShare;
-      });
+      }
     });
 
     const debtors = [];
@@ -496,6 +673,8 @@
     }
 
     const container = document.getElementById('settlementResults');
+    if (!container) return;
+
     if (expenses.length === 0) {
       container.innerHTML = `<div class="empty-state">Add participants and expenses to generate a settlement plan.</div>`;
     } else if (currentTransactions.length === 0) {
@@ -525,7 +704,10 @@
     textToCopy += "-----------------------------------\n";
     
     expenses.forEach(e => {
-      textToCopy += `• ${e.desc}: $${(e.amountCents / 100).toFixed(2)} (Paid by ${e.paidBy} for ${e.splitAmong.join(', ')})\n`;
+      const splitDetails = Object.entries(e.splits)
+        .map(([p, cents]) => `${p}: $${(cents / 100).toFixed(2)}`)
+        .join(', ');
+      textToCopy += `• ${e.desc}: $${(e.amountCents / 100).toFixed(2)} (Paid by ${e.paidBy} | ${splitDetails})\n`;
     });
 
     textToCopy += "\n💰 SETTLEMENT PLAN\n";
@@ -538,11 +720,13 @@
     }
 
     navigator.clipboard.writeText(textToCopy).then(() => {
-      const originalText = copyBtn.innerText;
-      copyBtn.innerText = "✓ Copied!";
-      setTimeout(() => {
-        copyBtn.innerText = originalText;
-      }, 2000);
+      if (copyBtn) {
+        const originalText = copyBtn.innerText;
+        copyBtn.innerText = "✓ Copied!";
+        setTimeout(() => {
+          copyBtn.innerText = originalText;
+        }, 2000);
+      }
     }).catch(err => {
       alert("Failed to copy. Please copy manually.");
     });
