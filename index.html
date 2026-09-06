@@ -292,7 +292,7 @@
   <div class="card full-width">
     <div class="card-header-actions">
       <h2 class="card-title">4. Settlement Plan</h2>
-      <button id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Plan</button>
+      <button id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Summary & Plan</button>
     </div>
     <div id="settlementResults">
       <div class="empty-state">Add participants and expenses to generate a settlement plan.</div>
@@ -433,11 +433,23 @@
       return;
     }
 
-    let textToCopy = "💰 Settlement Plan:\n\n";
+    const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+
+    let textToCopy = "📝 EXPENSE SUMMARY\n";
+    textToCopy += `Total Spent: $${totalAmount.toFixed(2)}\n`;
+    textToCopy += "-----------------------------------\n";
+    
+    expenses.forEach(e => {
+      textToCopy += `• ${e.desc}: $${e.amount.toFixed(2)} (Paid by ${e.paidBy} for ${e.splitAmong.join(', ')})\n`;
+    });
+
+    textToCopy += "\n💰 SETTLEMENT PLAN\n";
+    textToCopy += "-----------------------------------\n";
+
     if (currentTransactions.length === 0) {
       textToCopy += "Everyone is even! No payments needed.";
     } else {
-      textToCopy += currentTransactions.map(t => `${t.debtor} pays ${t.creditor} $${t.amount.toFixed(2)}`).join('\n');
+      textToCopy += currentTransactions.map(t => `• ${t.debtor} pays ${t.creditor} $${t.amount.toFixed(2)}`).join('\n');
     }
 
     navigator.clipboard.writeText(textToCopy).then(() => {
