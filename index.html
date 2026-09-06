@@ -26,12 +26,46 @@
     * { box-sizing: border-box; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang HK', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 32px 16px;
+      padding: 20px 16px 32px 16px;
       line-height: 1.5;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      max-width: 800px;
+      margin: 0 auto 16px auto;
+    }
+
+    .lang-switch {
+      display: flex;
+      background: var(--border);
+      padding: 3px;
+      border-radius: 8px;
+      gap: 2px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .lang-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
     }
 
     .app-header {
@@ -321,35 +355,42 @@
 </head>
 <body>
 
+<div class="top-bar">
+  <div class="lang-switch">
+    <button type="button" class="lang-btn active" id="langEnBtn" onclick="setLanguage('en')">English</button>
+    <button type="button" class="lang-btn" id="langZhBtn" onclick="setLanguage('zh')">繁體中文</button>
+  </div>
+</div>
+
 <header class="app-header">
-  <h1>Bill Splitter</h1>
-  <p>Add group members, record expenses, and get the simplest path to settle up.</p>
+  <h1 id="i18n-appTitle">Bill Splitter</h1>
+  <p id="i18n-appSub">Add group members, record expenses, and get the simplest path to settle up.</p>
 </header>
 
 <div class="container">
   
   <div class="card">
-    <h2 class="card-title" style="margin-bottom: 16px;">1. Participants</h2>
+    <h2 class="card-title" id="i18n-step1Title" style="margin-bottom: 16px;">1. Participants</h2>
     <div class="form-group">
       <div class="input-btn-group">
         <input type="text" id="personName" placeholder="e.g. Alex" onkeydown="if(event.key==='Enter') addPerson()">
-        <button type="button" onclick="addPerson()">Add</button>
+        <button type="button" id="i18n-addPersonBtn" onclick="addPerson()">Add</button>
       </div>
     </div>
     <div class="tags-container" id="peopleTags">
-      <span class="empty-state">No participants added yet.</span>
+      <span class="empty-state" id="i18n-noParticipants">No participants added yet.</span>
     </div>
   </div>
 
   <div class="card">
-    <h2 class="card-title" style="margin-bottom: 16px;">2. Add Expense</h2>
+    <h2 class="card-title" id="i18n-step2Title" style="margin-bottom: 16px;">2. Add Expense</h2>
     <div class="form-group">
-      <label for="expenseDesc">Description</label>
+      <label for="expenseDesc" id="i18n-descLabel">Description</label>
       <input type="text" id="expenseDesc" placeholder="e.g. Dinner, Taxi">
     </div>
 
     <div class="form-group">
-      <label>Split Method</label>
+      <label id="i18n-splitMethodLabel">Split Method</label>
       <div class="split-toggle-group">
         <button type="button" class="split-toggle-btn active" id="btnSplitEven" onclick="setSplitMode('even')">Split Evenly</button>
         <button type="button" class="split-toggle-btn" id="btnSplitExact" onclick="setSplitMode('exact')">Exact Amounts</button>
@@ -357,50 +398,165 @@
     </div>
 
     <div class="form-group" id="totalAmountGroup">
-      <label for="expenseAmount">Total Amount ($)</label>
+      <label for="expenseAmount" id="i18n-totalAmountLabel">Total Amount ($)</label>
       <input type="number" id="expenseAmount" step="1" min="1" placeholder="0">
     </div>
 
     <div class="form-group">
-      <label for="paidBySelect">Paid By</label>
+      <label for="paidBySelect" id="i18n-paidByLabel">Paid By</label>
       <select id="paidBySelect"></select>
     </div>
 
     <div class="form-group">
-      <label id="splitAmongLabel">Split Among</label>
+      <label id="i18n-splitAmongLabel">Split Among</label>
       <div id="splitAmongContainer"></div>
     </div>
-    <button type="button" class="btn-block" onclick="addExpense()">Add Expense</button>
+    <button type="button" class="btn-block" id="i18n-addExpenseBtn" onclick="addExpense()">Add Expense</button>
   </div>
 
   <div class="card full-width">
-    <h2 class="card-title" style="margin-bottom: 16px;">3. Expenses Summary</h2>
+    <h2 class="card-title" id="i18n-step3Title" style="margin-bottom: 16px;">3. Expenses Summary</h2>
     <div id="expenseList">
-      <div class="empty-state">No expenses logged yet.</div>
+      <div class="empty-state" id="i18n-noExpenses">No expenses logged yet.</div>
     </div>
   </div>
 
   <div class="card full-width">
     <div class="card-header-actions">
-      <h2 class="card-title">4. Settlement Plan</h2>
+      <h2 class="card-title" id="i18n-step4Title">4. Settlement Plan</h2>
       <button type="button" id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Summary & Plan</button>
     </div>
     <div id="settlementResults">
-      <div class="empty-state">Add participants and expenses to generate a settlement plan.</div>
+      <div class="empty-state" id="i18n-noSettlementPrompt">Add participants and expenses to generate a settlement plan.</div>
     </div>
   </div>
 
 </div>
 
 <script>
+  let currentLang = 'en';
   let people = [];
   let expenses = [];
   let currentTransactions = [];
   let splitMode = 'even';
 
+  const i18n = {
+    en: {
+      appTitle: "Bill Splitter",
+      appSub: "Add group members, record expenses, and get the simplest path to settle up.",
+      step1Title: "1. Participants",
+      personPlaceholder: "e.g. Alex",
+      addPersonBtn: "Add",
+      noParticipants: "No participants added yet.",
+      step2Title: "2. Add Expense",
+      descLabel: "Description",
+      descPlaceholder: "e.g. Dinner, Taxi",
+      splitMethodLabel: "Split Method",
+      splitEven: "Split Evenly",
+      splitExact: "Exact Amounts",
+      totalAmountLabel: "Total Amount ($)",
+      paidByLabel: "Paid By",
+      splitAmongLabel: "Split Among",
+      addExpenseBtn: "Add Expense",
+      addFirstPrompt: "Add participants above first.",
+      step3Title: "3. Expenses Summary",
+      noExpenses: "No expenses logged yet.",
+      paidBy: "Paid by",
+      step4Title: "4. Settlement Plan",
+      copyBtn: "📋 Copy Summary & Plan",
+      copied: "✓ Copied!",
+      noSettlementPrompt: "Add participants and expenses to generate a settlement plan.",
+      everyoneEven: "Everyone is even! No payments needed.",
+      pays: "pays",
+      alertDescPaidBy: "Please enter a description and select who paid.",
+      alertValidAmount: "Please enter a valid whole dollar amount.",
+      alertSelectParticipant: "Please select at least one person sharing the expense.",
+      alertValidAmountExact: "Please enter a valid whole dollar amount greater than 0 for all selected participants.",
+      alertSumMismatch: (sum, total) => `The sum of exact shares ($${sum}) does not match Total Amount ($${total}).`,
+      alertAddExpensesFirst: "Please add expenses first.",
+      copyHeaderExpense: "📝 EXPENSE SUMMARY",
+      copyHeaderTotal: "Total Spent",
+      copyHeaderSettlement: "💰 SETTLEMENT PLAN"
+    },
+    zh: {
+      appTitle: "AA制 帳單計算器",
+      appSub: "新增成員、記錄開支，自動計算最簡結算方案。",
+      step1Title: "1. 參與者",
+      personPlaceholder: "例如：阿樂 / Alex",
+      addPersonBtn: "新增",
+      noParticipants: "尚未新增參與者。",
+      step2Title: "2. 新增開支",
+      descLabel: "項目名稱",
+      descPlaceholder: "例如：晚餐、的士",
+      splitMethodLabel: "分攤方式",
+      splitEven: "平分",
+      splitExact: "按指定金額",
+      totalAmountLabel: "總金額 ($)",
+      paidByLabel: "付款人",
+      splitAmongLabel: "分攤成員",
+      addExpenseBtn: "新增開支",
+      addFirstPrompt: "請先在上方新增參與者。",
+      step3Title: "3. 開支摘要",
+      noExpenses: "尚未記錄任何開支。",
+      paidBy: "付款人：",
+      step4Title: "4. 結算方案",
+      copyBtn: "📋 複製摘要與方案",
+      copied: "✓ 已複製！",
+      noSettlementPrompt: "請新增參與者及開支以生成結算方案。",
+      everyoneEven: "大家已清帳，無需付款！",
+      pays: "需付給",
+      alertDescPaidBy: "請輸入項目名稱並選擇付款人。",
+      alertValidAmount: "請輸入有效的整數金額。",
+      alertSelectParticipant: "請至少選擇一位分攤開支的成員。",
+      alertValidAmountExact: "請為所有已選擇的成員輸入大於 0 的整數金額。",
+      alertSumMismatch: (sum, total) => `分攤金額總和 ($${sum}) 與總金額 ($${total}) 不符。`,
+      alertAddExpensesFirst: "請先新增開支項目。",
+      copyHeaderExpense: "📝 開支摘要",
+      copyHeaderTotal: "總支出",
+      copyHeaderSettlement: "💰 結算方案"
+    }
+  };
+
   window.addEventListener('DOMContentLoaded', () => {
-    updateUI();
+    applyLanguage();
   });
+
+  function setLanguage(lang) {
+    if (currentLang === lang) return;
+    currentLang = lang;
+
+    document.getElementById('langEnBtn').classList.toggle('active', lang === 'en');
+    document.getElementById('langZhBtn').classList.toggle('active', lang === 'zh');
+    document.documentElement.lang = lang === 'zh' ? 'zh-HK' : 'en';
+
+    applyLanguage();
+  }
+
+  function applyLanguage() {
+    const t = i18n[currentLang];
+
+    document.getElementById('i18n-appTitle').innerText = t.appTitle;
+    document.getElementById('i18n-appSub').innerText = t.appSub;
+    document.getElementById('i18n-step1Title').innerText = t.step1Title;
+    document.getElementById('personName').placeholder = t.personPlaceholder;
+    document.getElementById('i18n-addPersonBtn').innerText = t.addPersonBtn;
+    document.getElementById('i18n-step2Title').innerText = t.step2Title;
+    document.getElementById('i18n-descLabel').innerText = t.descLabel;
+    document.getElementById('expenseDesc').placeholder = t.descPlaceholder;
+    document.getElementById('i18n-splitMethodLabel').innerText = t.splitMethodLabel;
+    document.getElementById('btnSplitEven').innerText = t.splitEven;
+    document.getElementById('btnSplitExact').innerText = t.splitExact;
+    document.getElementById('i18n-totalAmountLabel').innerText = t.totalAmountLabel;
+    document.getElementById('i18n-paidByLabel').innerText = t.paidByLabel;
+    document.getElementById('i18n-splitAmongLabel').innerText = t.splitAmongLabel;
+    document.getElementById('i18n-addExpenseBtn').innerText = t.addExpenseBtn;
+    document.getElementById('i18n-step3Title').innerText = t.step3Title;
+    document.getElementById('i18n-step4Title').innerText = t.step4Title;
+    document.getElementById('copyBtn').innerText = t.copyBtn;
+
+    updateUI();
+    calculateSettlements();
+  }
 
   function escapeHtml(str) {
     return String(str)
@@ -450,9 +606,10 @@
   function renderSplitContainer() {
     const container = document.getElementById('splitAmongContainer');
     if (!container) return;
+    const t = i18n[currentLang];
     
     if (people.length === 0) {
-      container.innerHTML = `<span class="empty-state" style="padding: 8px 0;">Add participants above first.</span>`;
+      container.innerHTML = `<span class="empty-state" style="padding: 8px 0;">${t.addFirstPrompt}</span>`;
       return;
     }
 
@@ -494,13 +651,15 @@
   function addExpense() {
     const descInput = document.getElementById('expenseDesc');
     const paidBySelect = document.getElementById('paidBySelect');
+    const t = i18n[currentLang];
+
     if (!descInput || !paidBySelect) return;
 
     const desc = descInput.value.trim();
     const paidBy = paidBySelect.value;
     
     if (!desc || !paidBy) {
-      alert("Please enter a description and select who paid.");
+      alert(t.alertDescPaidBy);
       return;
     }
 
@@ -511,7 +670,7 @@
       const amountInput = document.getElementById('expenseAmount');
       const amountVal = amountInput ? parseInt(amountInput.value, 10) : 0;
       if (isNaN(amountVal) || amountVal <= 0) {
-        alert("Please enter a valid whole dollar amount.");
+        alert(t.alertValidAmount);
         return;
       }
 
@@ -519,7 +678,7 @@
       const selected = Array.from(document.querySelectorAll('.split-even-cb:checked')).map(cb => cb.value);
 
       if (selected.length === 0) {
-        alert("Please select at least one person sharing the expense.");
+        alert(t.alertSelectParticipant);
         return;
       }
 
@@ -539,7 +698,7 @@
     } else {
       const checkedBoxes = document.querySelectorAll('.split-exact-cb:checked');
       if (checkedBoxes.length === 0) {
-        alert("Please select at least one person sharing the expense.");
+        alert(t.alertSelectParticipant);
         return;
       }
 
@@ -558,7 +717,7 @@
       });
 
       if (hasInvalidAmount) {
-        alert("Please enter a valid whole dollar amount greater than 0 for all selected participants.");
+        alert(t.alertValidAmountExact);
         return;
       }
 
@@ -566,7 +725,7 @@
       const totalInputVal = totalInput ? parseInt(totalInput.value, 10) : NaN;
       if (!isNaN(totalInputVal) && totalInputVal > 0) {
         if (totalInputVal !== total) {
-          alert(`The sum of exact shares ($${total}) does not match Total Amount ($${totalInputVal}).`);
+          alert(t.alertSumMismatch(total, totalInputVal));
           return;
         }
       }
@@ -590,10 +749,12 @@
   }
 
   function updateUI() {
+    const t = i18n[currentLang];
     const peopleTags = document.getElementById('peopleTags');
+    
     if (peopleTags) {
       if (people.length === 0) {
-        peopleTags.innerHTML = `<span class="empty-state">No participants added yet.</span>`;
+        peopleTags.innerHTML = `<span class="empty-state">${t.noParticipants}</span>`;
       } else {
         peopleTags.innerHTML = people.map((p, i) => `
           <span class="person-tag">
@@ -614,7 +775,7 @@
     const expenseList = document.getElementById('expenseList');
     if (expenseList) {
       if (expenses.length === 0) {
-        expenseList.innerHTML = `<div class="empty-state">No expenses logged yet.</div>`;
+        expenseList.innerHTML = `<div class="empty-state">${t.noExpenses}</div>`;
       } else {
         expenseList.innerHTML = expenses.map((e, i) => {
           const splitDetails = Object.entries(e.splits)
@@ -625,7 +786,7 @@
             <div class="list-item">
               <div>
                 <div class="list-item-title">${escapeHtml(e.desc)}</div>
-                <div class="list-item-sub">Paid by <strong>${escapeHtml(e.paidBy)}</strong> — ${splitDetails}</div>
+                <div class="list-item-sub">${t.paidBy} <strong>${escapeHtml(e.paidBy)}</strong> — ${splitDetails}</div>
               </div>
               <div style="display: flex; align-items: center; gap: 12px;">
                 <span style="font-weight: 600;">$${e.amount}</span>
@@ -639,6 +800,7 @@
   }
 
   function calculateSettlements() {
+    const t = i18n[currentLang];
     const balances = {};
     people.forEach(p => balances[p] = 0);
 
@@ -686,14 +848,14 @@
     if (!container) return;
 
     if (expenses.length === 0) {
-      container.innerHTML = `<div class="empty-state">Add participants and expenses to generate a settlement plan.</div>`;
+      container.innerHTML = `<div class="empty-state">${t.noSettlementPrompt}</div>`;
     } else if (currentTransactions.length === 0) {
-      container.innerHTML = `<div class="settlement-card"><span class="settlement-text">Everyone is even! No payments needed.</span></div>`;
+      container.innerHTML = `<div class="settlement-card"><span class="settlement-text">${t.everyoneEven}</span></div>`;
     } else {
-      container.innerHTML = currentTransactions.map(t => `
+      container.innerHTML = currentTransactions.map(tr => `
         <div class="settlement-card">
-          <span class="settlement-text"><strong>${escapeHtml(t.debtor)}</strong> pays <strong>${escapeHtml(t.creditor)}</strong></span>
-          <span class="settlement-amount">$${t.amount}</span>
+          <span class="settlement-text"><strong>${escapeHtml(tr.debtor)}</strong> ${t.pays} <strong>${escapeHtml(tr.creditor)}</strong></span>
+          <span class="settlement-amount">$${tr.amount}</span>
         </div>
       `).join('');
     }
@@ -701,38 +863,39 @@
 
   function copySettlement() {
     const copyBtn = document.getElementById('copyBtn');
+    const t = i18n[currentLang];
 
     if (expenses.length === 0) {
-      alert("Please add expenses first.");
+      alert(t.alertAddExpensesFirst);
       return;
     }
 
     const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
 
-    let textToCopy = "📝 EXPENSE SUMMARY\n";
-    textToCopy += `Total Spent: $${totalSpent}\n`;
+    let textToCopy = `${t.copyHeaderExpense}\n`;
+    textToCopy += `${t.copyHeaderTotal}: $${totalSpent}\n`;
     textToCopy += "-----------------------------------\n";
     
     expenses.forEach(e => {
       const splitDetails = Object.entries(e.splits)
         .map(([p, amt]) => `${p}: $${amt}`)
         .join(', ');
-      textToCopy += `• ${e.desc}: $${e.amount} (Paid by ${e.paidBy} | ${splitDetails})\n`;
+      textToCopy += `• ${e.desc}: $${e.amount} (${t.paidBy} ${e.paidBy} | ${splitDetails})\n`;
     });
 
-    textToCopy += "\n💰 SETTLEMENT PLAN\n";
+    textToCopy += `\n${t.copyHeaderSettlement}\n`;
     textToCopy += "-----------------------------------\n";
 
     if (currentTransactions.length === 0) {
-      textToCopy += "Everyone is even! No payments needed.";
+      textToCopy += t.everyoneEven;
     } else {
-      textToCopy += currentTransactions.map(t => `• ${t.debtor} pays ${t.creditor} $${t.amount}`).join('\n');
+      textToCopy += currentTransactions.map(tr => `• ${tr.debtor} ${tr.pays} ${tr.creditor} $${tr.amount}`).join('\n');
     }
 
     navigator.clipboard.writeText(textToCopy).then(() => {
       if (copyBtn) {
         const originalText = copyBtn.innerText;
-        copyBtn.innerText = "✓ Copied!";
+        copyBtn.innerText = t.copied;
         setTimeout(() => {
           copyBtn.innerText = originalText;
         }, 2000);
