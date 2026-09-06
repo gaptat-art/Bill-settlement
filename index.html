@@ -691,7 +691,11 @@
     let text = `📊 EXPENSE SUMMARY\nTotal Spent: $${totalSpent}\n\n`;
     
     expenses.forEach(e => {
-      text += `• ${e.desc}: $${e.amount} (Paid by ${e.paidBy})\n`;
+      const splitList = Object.entries(e.splits)
+        .map(([p, amt]) => `${p} ($${amt})`)
+        .join(', ');
+
+      text += `• ${e.desc}: $${e.amount} (Paid by ${e.paidBy})\n  Split: ${splitList}\n`;
     });
 
     text += `\n🤝 SETTLEMENT PLAN\n`;
