@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,72 +9,76 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --primary-light: #e0e7ff;
-      --bg: #f3f4f6;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --bg: #f1f5f9;
       --card-bg: #ffffff;
-      --text: #1e293b;
+      --text: #0f172a;
       --text-muted: #64748b;
       --border: #e2e8f0;
       --danger: #ef4444;
-      --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
-      --radius: 16px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --radius: 12px;
     }
 
     * { box-sizing: border-box; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang HK', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-      background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #ffe4e6 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
       color: var(--text);
       margin: 0;
       padding: 32px 16px;
-      min-height: 100vh;
       line-height: 1.5;
     }
 
     .app-header {
       text-align: center;
-      max-width: 600px;
-      margin: 0 auto 28px auto;
+      max-width: 800px;
+      margin: 0 auto 32px auto;
     }
 
     .app-header h1 {
       margin: 0;
       font-size: 2rem;
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: -0.025em;
-      background: linear-gradient(135deg, #4f46e5, #9333ea, #e11d48);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
     .app-header p {
-      margin: 6px 0 0 0;
-      color: #475569;
-      font-size: 0.95rem;
-      font-weight: 500;
+      margin: 8px 0 0 0;
+      color: var(--text-muted);
     }
 
     .container {
-      max-width: 600px;
+      max-width: 800px;
       margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+      display: grid;
+      gap: 24px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 768px) {
+      .container { grid-template-columns: 1fr 1fr; }
+      .full-width { grid-column: span 2; }
     }
 
     .card {
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 22px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(8px);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      transition: box-shadow 0.2s ease;
     }
 
-    .card-header {
+    .card:hover {
+      box-shadow: var(--shadow);
+    }
+
+    .card-header-actions {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -83,49 +87,27 @@
 
     .card-title {
       margin: 0;
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-size: 1.125rem;
+      font-weight: 600;
     }
-
-    .step-badge {
-      font-size: 0.8rem;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 20px;
-      color: white;
-    }
-
-    .step-1 { background: linear-gradient(135deg, #6366f1, #3b82f6); }
-    .step-2 { background: linear-gradient(135deg, #a855f7, #ec4899); }
-    .step-3 { background: linear-gradient(135deg, #14b8a6, #06b6d4); }
-    .step-4 { background: linear-gradient(135deg, #f59e0b, #ef4444); }
 
     .form-group {
       margin-bottom: 16px;
     }
 
-    .form-group:last-child {
-      margin-bottom: 0;
-    }
-
     label {
       display: block;
       margin-bottom: 6px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
     }
 
     input[type="text"], input[type="number"], select {
       width: 100%;
       padding: 10px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       font-family: inherit;
       font-size: 0.95rem;
       color: var(--text);
@@ -137,15 +119,16 @@
     input[type="text"]:focus, input[type="number"]:focus, select:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
     }
 
     .split-toggle-group {
       display: flex;
-      background: #f1f5f9;
+      gap: 8px;
+      background: var(--bg);
       padding: 4px;
-      border-radius: 10px;
-      gap: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
     }
 
     .split-toggle-btn {
@@ -155,16 +138,17 @@
       border: none;
       padding: 8px;
       font-size: 0.85rem;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 500;
       transition: all 0.2s ease;
     }
 
     .split-toggle-btn.active {
-      background: #ffffff;
+      background: var(--card-bg);
       color: var(--primary);
-      box-shadow: 0 2px 4px rgb(0 0 0 / 0.06);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
     }
 
     .input-btn-group {
@@ -173,67 +157,64 @@
     }
 
     button {
-      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      background-color: var(--primary);
       color: white;
       border: none;
       padding: 10px 18px;
-      border-radius: 10px;
+      border-radius: 8px;
       font-family: inherit;
-      font-size: 0.9rem;
+      font-size: 0.925rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: background-color 0.2s ease, transform 0.1s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
     }
 
-    button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
-    }
+    button:hover { background-color: var(--primary-hover); }
+    button:active { transform: scale(0.98); }
 
     .btn-secondary {
-      background: #f1f5f9;
-      color: var(--text);
-      padding: 6px 12px;
-      font-size: 0.825rem;
-      box-shadow: none;
+      background-color: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 6px 14px;
+      font-size: 0.85rem;
     }
 
     .btn-secondary:hover {
-      background: #e2e8f0;
-      box-shadow: none;
+      background-color: var(--primary-light);
     }
 
-    .btn-block { width: 100%; margin-top: 6px; }
+    .btn-block { width: 100%; margin-top: 8px; }
 
     .tags-container {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 12px;
     }
 
-    .person-badge {
-      padding: 4px 10px;
+    .person-tag {
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 6px 10px 6px 12px;
       border-radius: 20px;
-      font-size: 0.825rem;
-      font-weight: 600;
+      font-size: 0.875rem;
+      font-weight: 500;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
       text-transform: none;
     }
 
     .btn-remove-tag {
       background: none;
       border: none;
+      color: var(--primary);
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 1rem;
       padding: 0;
       line-height: 1;
       display: flex;
@@ -242,24 +223,27 @@
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      opacity: 0.75;
+      opacity: 0.7;
+      transition: opacity 0.2s ease, background-color 0.2s ease;
     }
 
     .btn-remove-tag:hover {
       opacity: 1;
-      background-color: rgba(0, 0, 0, 0.1);
+      background-color: rgba(79, 70, 229, 0.15);
     }
 
     .checkbox-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
       gap: 8px;
+      margin-top: 8px;
     }
 
     .exact-grid {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      margin-top: 8px;
     }
 
     .exact-row {
@@ -274,65 +258,64 @@
       align-items: center;
       gap: 8px;
       padding: 8px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       cursor: pointer;
       font-size: 0.875rem;
       user-select: none;
-      background: #fff;
+      transition: border-color 0.2s ease;
     }
 
+    .checkbox-card:hover { border-color: var(--primary); }
     .checkbox-card input { accent-color: var(--primary); }
 
     .list-item {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       padding: 12px 0;
       border-bottom: 1px solid var(--border);
     }
 
     .list-item:last-child { border-bottom: none; }
-    .list-item-title { font-weight: 700; font-size: 0.95rem; }
-    .list-item-sub { font-size: 0.825rem; color: var(--text-muted); margin-top: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .list-item-title { font-weight: 500; }
+    .list-item-sub { font-size: 0.825rem; color: var(--text-muted); }
 
     .btn-delete-item {
       background: transparent;
       color: var(--text-muted);
       border: none;
-      padding: 6px;
-      font-size: 0.9rem;
-      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 1rem;
+      border-radius: 6px;
       cursor: pointer;
-      box-shadow: none;
+      transition: all 0.2s ease;
     }
 
     .btn-delete-item:hover {
       color: var(--danger);
       background-color: #fef2f2;
-      box-shadow: none;
     }
 
     .settlement-card {
       background: #f0fdf4;
       border: 1px solid #bbf7d0;
-      border-radius: 12px;
-      padding: 12px 16px;
-      margin-bottom: 8px;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .settlement-card:last-child { margin-bottom: 0; }
-    .settlement-text { font-weight: 600; color: #166534; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
-    .settlement-amount { font-weight: 800; color: #15803d; font-size: 1.05rem; }
+    .settlement-text { font-weight: 500; color: #166534; }
+    .settlement-amount { font-weight: 700; color: #15803d; }
 
     .empty-state {
       text-align: center;
       color: var(--text-muted);
-      font-size: 0.85rem;
-      padding: 12px 0;
+      font-size: 0.9rem;
+      padding: 24px 0;
     }
   </style>
 </head>
@@ -340,18 +323,16 @@
 
 <header class="app-header">
   <h1>Bill Splitter</h1>
-  <p>Track group expenses and calculate whole-dollar settlements.</p>
+  <p>Add group members, record expenses, and get the simplest path to settle up.</p>
 </header>
 
 <div class="container">
   
   <div class="card">
-    <div class="card-header">
-      <h2 class="card-title"><span class="step-badge step-1">1</span> Participants</h2>
-    </div>
+    <h2 class="card-title" style="margin-bottom: 16px;">1. Participants</h2>
     <div class="form-group">
       <div class="input-btn-group">
-        <input type="text" id="personName" placeholder="Enter name (e.g. alex / 阿樂)" onkeydown="if(event.key==='Enter') addPerson()">
+        <input type="text" id="personName" placeholder="e.g. Alex" onkeydown="if(event.key==='Enter') addPerson()">
         <button type="button" onclick="addPerson()">Add</button>
       </div>
     </div>
@@ -361,8 +342,10 @@
   </div>
 
   <div class="card">
-    <div class="card-header">
-      <h2 class="card-title"><span class="step-badge step-2">2</span> Add Expense</h2>
+    <h2 class="card-title" style="margin-bottom: 16px;">2. Add Expense</h2>
+    <div class="form-group">
+      <label for="expenseDesc">Description</label>
+      <input type="text" id="expenseDesc" placeholder="e.g. Dinner, Taxi">
     </div>
 
     <div class="form-group">
@@ -371,11 +354,6 @@
         <button type="button" class="split-toggle-btn active" id="btnSplitEven" onclick="setSplitMode('even')">Split Evenly</button>
         <button type="button" class="split-toggle-btn" id="btnSplitExact" onclick="setSplitMode('exact')">Exact Amounts</button>
       </div>
-    </div>
-
-    <div class="form-group">
-      <label for="expenseDesc">Description</label>
-      <input type="text" id="expenseDesc" placeholder="e.g. Dinner / 晚餐, Taxi / 鐵路">
     </div>
 
     <div class="form-group" id="totalAmountGroup">
@@ -392,26 +370,23 @@
       <label id="splitAmongLabel">Split Among</label>
       <div id="splitAmongContainer"></div>
     </div>
-
     <button type="button" class="btn-block" onclick="addExpense()">Add Expense</button>
   </div>
 
-  <div class="card">
-    <div class="card-header">
-      <h2 class="card-title"><span class="step-badge step-3">3</span> Expenses Summary</h2>
-    </div>
+  <div class="card full-width">
+    <h2 class="card-title" style="margin-bottom: 16px;">3. Expenses Summary</h2>
     <div id="expenseList">
       <div class="empty-state">No expenses logged yet.</div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-header">
-      <h2 class="card-title"><span class="step-badge step-4">4</span> Settlement Plan</h2>
-      <button type="button" id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Summary</button>
+  <div class="card full-width">
+    <div class="card-header-actions">
+      <h2 class="card-title">4. Settlement Plan</h2>
+      <button type="button" id="copyBtn" class="btn-secondary" onclick="copySettlement()">📋 Copy Summary & Plan</button>
     </div>
     <div id="settlementResults">
-      <div class="empty-state">Add participants and expenses to generate plan.</div>
+      <div class="empty-state">Add participants and expenses to generate a settlement plan.</div>
     </div>
   </div>
 
@@ -423,37 +398,9 @@
   let currentTransactions = [];
   let splitMode = 'even';
 
-  const PALETTE = [
-    { bg: '#e0f2fe', text: '#0369a1', border: '#bae6fd' },
-    { bg: '#fce7f3', text: '#be185d', border: '#fbcfe8' },
-    { bg: '#dcfce7', text: '#15803d', border: '#bbf7d0' },
-    { bg: '#fef3c7', text: '#b45309', border: '#fde68a' },
-    { bg: '#f3e8ff', text: '#6b21a8', border: '#e9d5ff' },
-    { bg: '#ffedd5', text: '#c2410c', border: '#fed7aa' },
-    { bg: '#ccfbf1', text: '#0f766e', border: '#99f6e4' },
-    { bg: '#ffe4e6', text: '#be123c', border: '#fecdd3' }
-  ];
-
   window.addEventListener('DOMContentLoaded', () => {
     updateUI();
   });
-
-  function getPersonStyle(name) {
-    const index = people.indexOf(name);
-    if (index === -1) return PALETTE[0];
-    return PALETTE[index % PALETTE.length];
-  }
-
-  function getPersonBadgeHtml(name, showRemove = false, removeIndex = -1) {
-    const style = getPersonStyle(name);
-    const safeName = escapeHtml(name);
-    return `
-      <span class="person-badge" style="background-color: ${style.bg}; color: ${style.text}; border: 1px solid ${style.border};">
-        ${safeName}
-        ${showRemove ? `<button type="button" class="btn-remove-tag" style="color: ${style.text};" onclick="removePerson(${removeIndex})" title="Remove ${safeName}">✕</button>` : ''}
-      </span>
-    `;
-  }
 
   function escapeHtml(str) {
     return String(str)
@@ -466,13 +413,16 @@
 
   function setSplitMode(mode) {
     splitMode = mode;
-    document.getElementById('btnSplitEven').classList.toggle('active', mode === 'even');
-    document.getElementById('btnSplitExact').classList.toggle('active', mode === 'exact');
+    const btnEven = document.getElementById('btnSplitEven');
+    const btnExact = document.getElementById('btnSplitExact');
+    if (btnEven) btnEven.classList.toggle('active', mode === 'even');
+    if (btnExact) btnExact.classList.toggle('active', mode === 'exact');
     renderSplitContainer();
   }
 
   function addPerson() {
     const input = document.getElementById('personName');
+    if (!input) return;
     const name = input.value.trim();
     if (!name || people.includes(name)) return;
 
@@ -482,6 +432,7 @@
   }
 
   function removePerson(index) {
+    if (index < 0 || index >= people.length) return;
     const personToRemove = people[index];
     people.splice(index, 1);
 
@@ -501,39 +452,31 @@
     if (!container) return;
     
     if (people.length === 0) {
-      container.innerHTML = `<span class="empty-state">Add participants above first.</span>`;
+      container.innerHTML = `<span class="empty-state" style="padding: 8px 0;">Add participants above first.</span>`;
       return;
     }
 
     if (splitMode === 'even') {
       container.innerHTML = `
         <div class="checkbox-grid">
-          ${people.map(p => {
-            const style = getPersonStyle(p);
-            return `
-              <label class="checkbox-card" style="border-color: ${style.border}; background-color: ${style.bg}20;">
-                <input type="checkbox" value="${escapeHtml(p)}" class="split-even-cb" checked> 
-                <span style="color: ${style.text}; font-weight: 600;">${escapeHtml(p)}</span>
-              </label>
-            `;
-          }).join('')}
+          ${people.map(p => `
+            <label class="checkbox-card">
+              <input type="checkbox" value="${escapeHtml(p)}" class="split-even-cb" checked> ${escapeHtml(p)}
+            </label>
+          `).join('')}
         </div>
       `;
     } else {
       container.innerHTML = `
         <div class="exact-grid">
-          ${people.map(p => {
-            const style = getPersonStyle(p);
-            return `
-              <div class="exact-row">
-                <label class="checkbox-card" style="flex: 1; border-color: ${style.border}; background-color: ${style.bg}20;">
-                  <input type="checkbox" value="${escapeHtml(p)}" class="split-exact-cb" checked onchange="toggleExactInput('${escapeHtml(p)}')"> 
-                  <span style="color: ${style.text}; font-weight: 600;">${escapeHtml(p)}</span>
-                </label>
-                <input type="number" step="1" min="0" placeholder="0" class="exact-input" id="exact-input-${escapeHtml(p)}" style="width: 100px;">
-              </div>
-            `;
-          }).join('')}
+          ${people.map(p => `
+            <div class="exact-row">
+              <label class="checkbox-card" style="flex: 1;">
+                <input type="checkbox" value="${escapeHtml(p)}" class="split-exact-cb" checked onchange="toggleExactInput('${escapeHtml(p)}')"> ${escapeHtml(p)}
+              </label>
+              <input type="number" step="1" min="0" placeholder="0" class="exact-input" id="exact-input-${escapeHtml(p)}" style="width: 120px;">
+            </div>
+          `).join('')}
         </div>
       `;
     }
@@ -549,8 +492,12 @@
   }
 
   function addExpense() {
-    const desc = document.getElementById('expenseDesc').value.trim();
-    const paidBy = document.getElementById('paidBySelect').value;
+    const descInput = document.getElementById('expenseDesc');
+    const paidBySelect = document.getElementById('paidBySelect');
+    if (!descInput || !paidBySelect) return;
+
+    const desc = descInput.value.trim();
+    const paidBy = paidBySelect.value;
     
     if (!desc || !paidBy) {
       alert("Please enter a description and select who paid.");
@@ -561,9 +508,10 @@
     let total = 0;
 
     if (splitMode === 'even') {
-      const amountVal = parseInt(document.getElementById('expenseAmount').value, 10);
+      const amountInput = document.getElementById('expenseAmount');
+      const amountVal = amountInput ? parseInt(amountInput.value, 10) : 0;
       if (isNaN(amountVal) || amountVal <= 0) {
-        alert("Please enter a valid dollar amount.");
+        alert("Please enter a valid whole dollar amount.");
         return;
       }
 
@@ -610,11 +558,12 @@
       });
 
       if (hasInvalidAmount) {
-        alert("Please enter a valid whole dollar amount for all selected participants.");
+        alert("Please enter a valid whole dollar amount greater than 0 for all selected participants.");
         return;
       }
 
-      const totalInputVal = parseInt(document.getElementById('expenseAmount').value, 10);
+      const totalInput = document.getElementById('expenseAmount');
+      const totalInputVal = totalInput ? parseInt(totalInput.value, 10) : NaN;
       if (!isNaN(totalInputVal) && totalInputVal > 0) {
         if (totalInputVal !== total) {
           alert(`The sum of exact shares ($${total}) does not match Total Amount ($${totalInputVal}).`);
@@ -623,16 +572,18 @@
       }
     }
 
-    expenses.push({ desc, amount: total, paidBy, splits });
+    expenses.push({ desc, amount: total, paidBy, splits, splitMode });
     
-    document.getElementById('expenseDesc').value = '';
-    document.getElementById('expenseAmount').value = '';
+    if (descInput) descInput.value = '';
+    const amountInput = document.getElementById('expenseAmount');
+    if (amountInput) amountInput.value = '';
     
     updateUI();
     calculateSettlements();
   }
 
   function removeExpense(index) {
+    if (index < 0 || index >= expenses.length) return;
     expenses.splice(index, 1);
     updateUI();
     calculateSettlements();
@@ -640,42 +591,50 @@
 
   function updateUI() {
     const peopleTags = document.getElementById('peopleTags');
-    if (people.length === 0) {
-      peopleTags.innerHTML = `<span class="empty-state">No participants added yet.</span>`;
-    } else {
-      peopleTags.innerHTML = people.map((p, i) => getPersonBadgeHtml(p, true, i)).join('');
+    if (peopleTags) {
+      if (people.length === 0) {
+        peopleTags.innerHTML = `<span class="empty-state">No participants added yet.</span>`;
+      } else {
+        peopleTags.innerHTML = people.map((p, i) => `
+          <span class="person-tag">
+            ${escapeHtml(p)}
+            <button type="button" class="btn-remove-tag" onclick="removePerson(${i})" title="Remove ${escapeHtml(p)}">✕</button>
+          </span>
+        `).join('');
+      }
     }
 
     const paidBySelect = document.getElementById('paidBySelect');
-    paidBySelect.innerHTML = people.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+    if (paidBySelect) {
+      paidBySelect.innerHTML = people.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+    }
 
     renderSplitContainer();
 
     const expenseList = document.getElementById('expenseList');
-    if (expenses.length === 0) {
-      expenseList.innerHTML = `<div class="empty-state">No expenses logged yet.</div>`;
-    } else {
-      expenseList.innerHTML = expenses.map((e, i) => {
-        const splitBadges = Object.keys(e.splits)
-          .map(p => getPersonBadgeHtml(p))
-          .join(' ');
+    if (expenseList) {
+      if (expenses.length === 0) {
+        expenseList.innerHTML = `<div class="empty-state">No expenses logged yet.</div>`;
+      } else {
+        expenseList.innerHTML = expenses.map((e, i) => {
+          const splitDetails = Object.entries(e.splits)
+            .map(([p, amt]) => `${escapeHtml(p)} ($${amt})`)
+            .join(', ');
 
-        return `
-          <div class="list-item">
-            <div>
-              <div class="list-item-title">${escapeHtml(e.desc)}</div>
-              <div class="list-item-sub">
-                <span>Paid by</span> ${getPersonBadgeHtml(e.paidBy)}
-                <span>• Split:</span> ${splitBadges}
+          return `
+            <div class="list-item">
+              <div>
+                <div class="list-item-title">${escapeHtml(e.desc)}</div>
+                <div class="list-item-sub">Paid by <strong>${escapeHtml(e.paidBy)}</strong> — ${splitDetails}</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-weight: 600;">$${e.amount}</span>
+                <button type="button" class="btn-delete-item" onclick="removeExpense(${i})" title="Delete expense">✕</button>
               </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-weight: 700; font-size: 1.05rem;">$${e.amount}</span>
-              <button type="button" class="btn-delete-item" onclick="removeExpense(${i})" title="Delete expense">✕</button>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `;
+        }).join('');
+      }
     }
   }
 
@@ -724,18 +683,16 @@
     }
 
     const container = document.getElementById('settlementResults');
+    if (!container) return;
+
     if (expenses.length === 0) {
-      container.innerHTML = `<div class="empty-state">Add participants and expenses to generate plan.</div>`;
+      container.innerHTML = `<div class="empty-state">Add participants and expenses to generate a settlement plan.</div>`;
     } else if (currentTransactions.length === 0) {
       container.innerHTML = `<div class="settlement-card"><span class="settlement-text">Everyone is even! No payments needed.</span></div>`;
     } else {
       container.innerHTML = currentTransactions.map(t => `
         <div class="settlement-card">
-          <span class="settlement-text">
-            ${getPersonBadgeHtml(t.debtor)} 
-            <span>pays</span> 
-            ${getPersonBadgeHtml(t.creditor)}
-          </span>
+          <span class="settlement-text"><strong>${escapeHtml(t.debtor)}</strong> pays <strong>${escapeHtml(t.creditor)}</strong></span>
           <span class="settlement-amount">$${t.amount}</span>
         </div>
       `).join('');
@@ -752,32 +709,36 @@
 
     const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
 
-    let text = `Total Spent: $${totalSpent}\n\nExpenses:\n`;
+    let textToCopy = "📝 EXPENSE SUMMARY\n";
+    textToCopy += `Total Spent: $${totalSpent}\n`;
+    textToCopy += "-----------------------------------\n";
     
     expenses.forEach(e => {
       const splitDetails = Object.entries(e.splits)
-        .map(([p, amt]) => `${p} ($${amt})`)
+        .map(([p, amt]) => `${p}: $${amt}`)
         .join(', ');
-
-      text += `• ${e.desc} - $${e.amount} (Paid by ${e.paidBy})\n  Split: ${splitDetails}\n`;
+      textToCopy += `• ${e.desc}: $${e.amount} (Paid by ${e.paidBy} | ${splitDetails})\n`;
     });
 
-    text += `\nSettlement Plan:\n`;
+    textToCopy += "\n💰 SETTLEMENT PLAN\n";
+    textToCopy += "-----------------------------------\n";
 
     if (currentTransactions.length === 0) {
-      text += `Everyone is even!`;
+      textToCopy += "Everyone is even! No payments needed.";
     } else {
-      text += currentTransactions.map(t => `• ${t.debtor} pays ${t.creditor}: $${t.amount}`).join('\n');
+      textToCopy += currentTransactions.map(t => `• ${t.debtor} pays ${t.creditor} $${t.amount}`).join('\n');
     }
 
-    navigator.clipboard.writeText(text).then(() => {
-      const originalText = copyBtn.innerText;
-      copyBtn.innerText = "✓ Copied";
-      setTimeout(() => {
-        copyBtn.innerText = originalText;
-      }, 2000);
-    }).catch(() => {
-      alert("Failed to copy automatically.");
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      if (copyBtn) {
+        const originalText = copyBtn.innerText;
+        copyBtn.innerText = "✓ Copied!";
+        setTimeout(() => {
+          copyBtn.innerText = originalText;
+        }, 2000);
+      }
+    }).catch(err => {
+      alert("Failed to copy. Please copy manually.");
     });
   }
 </script>
